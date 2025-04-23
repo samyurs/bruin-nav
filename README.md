@@ -1,1 +1,3 @@
 # bruin-nav
+
+BruinNav is a mobile app designed to help Bruins navigate, understand, and connect with UCLA's complex and historic campus. Through an interactive, user-friendly map, students can easily locate buildings, restrooms, water fountains, printers, and study spots with a smart search function. Tapping on any building reveals detailed information like hours of operation, floor plans, and departments housed inside, along with all available amenities. BruinNav features Community Notes, a student-powered section where users can share tips on navigating tricky hallways, finding shortcuts, reporting elevator outages, and more. Notes can be upvoted or downvoted to prioritize the most helpful information.
