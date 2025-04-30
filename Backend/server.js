@@ -22,6 +22,7 @@ mongoose
 // Routes
 app.use("/api/users", require("./routes/users")); // new route for login/register
 app.use("/api/notes", require("./routes/notes")); // existing notes route
+app.use("/api/map", require("./routes/map"));  // route for map
 
 // Start server
 const PORT = process.env.PORT || 5050;

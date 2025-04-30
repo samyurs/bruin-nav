@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+ // Used for "user comment system related to facilities"
 const NoteSchema = new mongoose.Schema({
   building: String,
   text: String,
