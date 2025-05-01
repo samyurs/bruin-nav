@@ -3,8 +3,13 @@ const mongoose = require('mongoose');
 const LandmarkSchema = new mongoose.Schema({
     name: { type: String, required: true },
     type: { type: String, enum: [
-        'building', 'restroom', 'study-spot',
-        'classroom', 'printer'
+        'building',
+        'male-restroom',
+        'female-restroom',
+        'neutral-restroom',
+        'study-spot',
+        'classroom',
+        'printer'
     ] },
     location: GeoJSONSchema,
     hours: {
