@@ -18,7 +18,7 @@ const LandmarkSchema = new mongoose.Schema({
     },
     parent: { type: mongoose.Types.ObjectId, ref: 'Landmark' },
 });
-LandmarkSchema.index({ location: '2dsphere' });
+LandmarkSchema.index({ name: 'text', location: '2dsphere' });
 
 const HoursSchema = new mongoose.Schema({
     isOpen: { type: Boolean, required: true },
