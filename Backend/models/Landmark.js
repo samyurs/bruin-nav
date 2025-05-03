@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const LandmarkSchema = new mongoose.Schema({
     name: { type: String, required: true },
@@ -50,4 +50,4 @@ const GeoJSONSchema = new mongoose.Schema({
     }
 }, { _id: false });
 
-module.exports = mongoose.models.Landmark || mongoose.model('Landmark', LandmarkSchema);
+export default mongoose.models.Landmark || mongoose.model('Landmark', LandmarkSchema);

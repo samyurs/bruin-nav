@@ -1,6 +1,6 @@
-const express = require('express');
-const Landmark = require('../models/Landmark');
-const z = require('zod');
+import express from 'express';
+import Landmark from '../models/Landmark.js';
+import z from 'zod';
 
 const router = express.Router();
 
@@ -97,4 +97,4 @@ router.get('/', async (req, res) => {
     res.json({ landmarks });
 });
 
-module.exports = router;
+export default router;
