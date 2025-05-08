@@ -1,16 +1,18 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+
+export const LANDMARK_TYPES = [
+    'building',
+    'male-restroom',
+    'female-restroom',
+    'neutral-restroom',
+    'study-spot',
+    'classroom',
+    'printer'
+];
 
 const LandmarkSchema = new mongoose.Schema({
     name: { type: String, required: true },
-    type: { type: String, enum: [
-        'building',
-        'male-restroom',
-        'female-restroom',
-        'neutral-restroom',
-        'study-spot',
-        'classroom',
-        'printer'
-    ] },
+    type: { type: String, enum: LANDMARK_TYPES },
     location: GeoJSONSchema,
     hours: {
         type: [HoursSchema],
@@ -18,7 +20,7 @@ const LandmarkSchema = new mongoose.Schema({
     },
     parent: { type: mongoose.Types.ObjectId, ref: 'Landmark' },
 });
-LandmarkSchema.index({ location: '2dsphere' });
+LandmarkSchema.index({ name: 'text', location: '2dsphere' });
 
 const HoursSchema = new mongoose.Schema({
     isOpen: { type: Boolean, required: true },
@@ -50,4 +52,4 @@ const GeoJSONSchema = new mongoose.Schema({
     }
 }, { _id: false });
 
-module.exports = mongoose.models.Landmark || mongoose.model('Landmark', LandmarkSchema);
+export default mongoose.models.Landmark || mongoose.model('Landmark', LandmarkSchema);
