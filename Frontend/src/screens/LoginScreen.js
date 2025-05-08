@@ -53,9 +53,13 @@ export default function LoginScreen({ navigation }) {
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-        <Text style={styles.registerText}>New here? Register instead</Text>
-      </TouchableOpacity>
+      <View style={styles.registerText}>
+        <Text>New here? </Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+          <Text style={styles.linkText}>Sign up</Text>
+        </TouchableOpacity>
+      </View>
+
     </View>
   );
 }
@@ -66,7 +70,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',      // Move everything toward the top
     paddingTop: 100,    
     paddingHorizontal: 32,
-    backgroundColor: '#fff',
+    backgroundColor: '#CBE7FF',
   },
   title: {
     fontSize: 28,
@@ -76,7 +80,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#000000',
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -85,21 +89,27 @@ const styles = StyleSheet.create({
     backgroundColor: '#f9f9f9',
   },
   button: {
-    backgroundColor: '#007bff',
+    backgroundColor: '#FFDC3D',
+    borderWidth: 1,
     paddingVertical: 14,
     borderRadius: 8,
     marginTop: 10,
     marginBottom: 20,
   },
   buttonText: {
-    color: '#fff',
+    color: '#000000',
     textAlign: 'center',
     fontWeight: '600',
     fontSize: 16,
   },
   registerText: {
-    color: '#007bff',
-    textAlign: 'center',
+    color: '#000000',
+    justifyContent: 'center',
+    flexDirection: 'row', 
+    flexWrap: 'wrap',
     fontSize: 14,
   },
+  linkText: {
+    fontWeight: 'bold',
+  }
 });
