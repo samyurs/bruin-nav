@@ -1,16 +1,18 @@
 import mongoose from 'mongoose';
 
+export const LANDMARK_TYPES = [
+    'building',
+    'male-restroom',
+    'female-restroom',
+    'neutral-restroom',
+    'study-spot',
+    'classroom',
+    'printer'
+];
+
 const LandmarkSchema = new mongoose.Schema({
     name: { type: String, required: true },
-    type: { type: String, enum: [
-        'building',
-        'male-restroom',
-        'female-restroom',
-        'neutral-restroom',
-        'study-spot',
-        'classroom',
-        'printer'
-    ] },
+    type: { type: String, enum: LANDMARK_TYPES },
     location: GeoJSONSchema,
     hours: {
         type: [HoursSchema],

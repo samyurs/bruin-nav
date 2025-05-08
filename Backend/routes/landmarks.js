@@ -1,5 +1,5 @@
 import express from 'express';
-import Landmark from '../models/Landmark.js';
+import Landmark, { LANDMARK_TYPES } from '../models/Landmark.js';
 import z from 'zod';
 
 const router = express.Router();
@@ -7,6 +7,7 @@ const router = express.Router();
 const landmarkQuerySchema = z
     .object({
         search: z.string().optional(),
+        type: z.enum(LANDMARK_TYPES).optional(),
         latitude: z.coerce.number()
             .refine(x => !isNaN(x), { message: 'Latitude must be a number' })
             .gte(-90).lte(90)
@@ -35,6 +36,7 @@ const landmarkQuerySchema = z
  * ```ts
  * {
  *   search?: string, // Search term (name/description)
+ *   type?: string, // Type of landmark (building, restroom, etc.)
  *   latitude?: number, // Latitude (-90 to 90 degrees)
  *   longitude?: number, // Longitude (-180 to 180 degrees)
  *   maxDistance?: number // Max distance from the location in meters
@@ -83,6 +85,7 @@ router.get('/', async (req, res) => {
 
     const landmarks = await Landmark.find({
         $text: { $search: query.search },
+        type: query.type ? query.type : undefined,
         location: query.longitude ? {
             $near: {
                 $geometry: {
