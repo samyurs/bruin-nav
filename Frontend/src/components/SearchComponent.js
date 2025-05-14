@@ -32,7 +32,6 @@ function Search() {
 
   const options = (text) => {
   
-
     setInputValue(text);
     let pattern = ".*" + text + ".*"; // Use text for real-time updates
     let regex = new RegExp(pattern, "gi");
