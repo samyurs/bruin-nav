@@ -1,0 +1,210 @@
+/**
+ * PATH ROUTER
+ * -----------
+ * Calculates indoor routes between two landmarks.
+ *
+ * 1.  If `to` is a *type*   (e.g. printer) → run a BFS that
+ *     expands outward until the first landmark of that type is found.
+ * 2.  If `to` is a *name*   (e.g. "Room 3420") →
+ *     2‑1  run our own JavaScript BFS to guarantee the shortest path
+ *     2‑2  *optionally* run Mongo $graphLookup when the client asks
+ *          for `mode=graph`; we only keep that result if it is strictly
+ *          shorter than the BFS baseline.
+ *
+ *  →  This keeps correctness (BFS) while leaving a switch for future
+ *     large‑scale optimisations with $graphLookup.
+ */
+
+const express  = require("express");
+const router   = express.Router();
+const mongoose = require("mongoose");
+
+const Landmark   = require("../models/Landmark");
+const IndoorNode = require("../models/IndoorNode");
+
+// Allowed categories that a client can pass as `to=printer` etc.
+const knownTypes = [
+  "printer",
+  "classroom",
+  "male-restroom",
+  "female-restroom",
+  "neutral-restroom"
+];
+
+// ------------------------------------------------------------------
+// GET /api/path?from=...&to=...[&mode=bfs|graph]
+// ------------------------------------------------------------------
+router.get("/", async (req, res) => {
+  // default to BFS so we always return a shortest path
+  const { from, to, mode = "bfs" } = req.query;
+
+  if (!from || !to) {
+    return res.status(400).json({ error: "`from` and `to` are required" });
+  }
+
+  // 1.  Source landmark  -----------------------------------------------------
+  const srcL = await Landmark.findOne({ name: from });
+  if (!srcL) return res.status(404).json({ error: "Source landmark not found" });
+
+  const [srcNodeId] = srcL.connectedTo || [];
+  if (!srcNodeId) {
+    return res
+      .status(400)
+      .json({ error: "Source landmark is not linked to an IndoorNode" });
+  }
+
+  // 2.  Decide how to interpret `to` ----------------------------------------
+  let dstL, pathIds;
+  let algo = "bfs"; // keep track of which algorithm we finally used
+
+  // 2‑A. `to` is a *category*  (printer / restroom / …) ---------------------
+  if (knownTypes.includes(to)) {
+    const nearest = await findNearestLandmarkByType(srcNodeId.toString(), to);
+    if (!nearest) {
+      return res
+        .status(404)
+        .json({ error: `No reachable landmark of type '${to}'` });
+    }
+
+    dstL   = nearest.landmark;
+    pathIds = nearest.path; // already a BFS shortest path
+    algo    = "bfs (via type)";
+  }
+
+  // 2‑B. `to` is an explicit *landmark name* --------------------------------
+  else {
+    dstL = await Landmark.findOne({ name: to });
+    if (!dstL) {
+      return res.status(404).json({ error: "Destination landmark not found" });
+    }
+
+    const [dstNodeId] = dstL.connectedTo || [];
+    if (!dstNodeId) {
+      return res
+        .status(400)
+        .json({ error: "Destination landmark is not linked to an IndoorNode" });
+    }
+
+    // 2‑B‑1  Baseline — always run BFS first (guaranteed shortest)
+    const bfsPath = await bfsSearch(
+      srcNodeId.toString(),
+      dstNodeId.toString()
+    );
+    if (!bfsPath) return res.status(404).json({ error: "No route found" });
+
+    pathIds = bfsPath; // default choice
+
+    // 2‑B‑2  Optional optimisation — run $graphLookup when asked
+    if (mode === "graph") {
+      const graphPath = await runGraph(srcNodeId, dstNodeId);
+      // we only keep it when it *beats* BFS
+      if (graphPath && graphPath.length < bfsPath.length) {
+        pathIds = graphPath;
+        algo    = "graph";
+      }
+    }
+  }
+
+  // 3.  Translate node IDs → human‑readable names ---------------------------
+  const nodes = await IndoorNode.find({ _id: { $in: pathIds } })
+    .select("name")
+    .lean();
+  const id2name = Object.fromEntries(nodes.map((n) => [n._id.toString(), n.name]));
+
+  const steps = pathIds.map((id, depth) => ({
+    id,
+    name: id2name[id],
+    depth
+  }));
+
+  return res.json({
+    algorithm: algo,
+    from:      srcL.name,
+    to:        dstL.name,
+    steps
+  });
+});
+
+// ------------------------------------------------------------------
+// Helper: BFS outward until the first landmark of type xyz is found
+// ------------------------------------------------------------------
+async function findNearestLandmarkByType(startNodeId, type) {
+  const queue   = [[startNodeId]];
+  const visited = new Set([startNodeId]);
+
+  while (queue.length) {
+    const path   = queue.shift();
+    const nodeId = path.at(-1);
+
+    // Is there a landmark of this type attached to *this* node?
+    const lm = await Landmark.findOne({ connectedTo: nodeId, type });
+    if (lm) return { landmark: lm, path };
+
+    // Expand neighbours
+    const node = await IndoorNode.findById(nodeId).select("connectsTo");
+    for (const nextId of node.connectsTo) {
+      const str = nextId.toString();
+      if (!visited.has(str)) {
+        visited.add(str);
+        queue.push([...path, str]);
+      }
+    }
+  }
+  return null;
+}
+
+// ------------------------------------------------------------------
+// Helper: MongoDB $graphLookup — fetch whole sub‑graph in one query
+// ------------------------------------------------------------------
+async function runGraph(srcNodeId, dstNodeId) {
+  const agg = await IndoorNode.aggregate([
+    { $match: { _id: new mongoose.Types.ObjectId(srcNodeId) } },
+    {
+      $graphLookup: {
+        from:             "indoornodes",
+        startWith:        "$_id",
+        connectFromField: "connectsTo",
+        connectToField:   "_id",
+        as:               "path",
+        depthField:       "depth",
+        maxDepth:         15
+      }
+    }
+  ]);
+
+  const full   = agg?.[0]?.path || [];
+  const target = full.find((n) => n._id.toString() === dstNodeId.toString());
+  if (!target) return null;
+
+  // Reconstruct one candidate path by trimming to maxDepth
+  return full
+    .filter((n) => n.depth <= target.depth)
+    .sort((a, b) => a.depth - b.depth)
+    .map((n) => n._id.toString());
+}
+
+// ------------------------------------------------------------------
+// Helper: plain JavaScript BFS — guarantees shortest path
+// ------------------------------------------------------------------
+async function bfsSearch(startId, endId) {
+  const queue   = [[startId]];
+  const visited = new Set([startId]);
+
+  while (queue.length) {
+    const path   = queue.shift();
+    const nodeId = path.at(-1);
+    if (nodeId === endId) return path;
+
+    const node = await IndoorNode.findById(nodeId).select("connectsTo");
+    for (const nextId of node.connectsTo) {
+      const str = nextId.toString();
+      if (!visited.has(str)) {
+        visited.add(str);
+        queue.push([...path, str]);
+      }
+    }
+  }
+  return null; // unreachable
+}
+
+module.exports = router;

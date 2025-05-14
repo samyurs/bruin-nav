@@ -11,19 +11,14 @@ app.use(express.json());
 
 // MongoDB connection
 mongoose
-  .connect(process.env.MONGO_URI, {
-    // dbName: "BruinNav",
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
 // Routes
 app.use("/api/users", require("./routes/users")); // new route for login/register
 app.use("/api/notes", require("./routes/notes")); // existing notes route
-app.use("/api/map", require("./routes/map"));  // route for map
-
+app.use("/api/path", require("./routes/path"));  // path search API
 // Start server
 const PORT = process.env.PORT || 5050;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

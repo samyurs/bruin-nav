@@ -1,0 +1,745 @@
+{
+  "building": "Boelter Hall",
+  "nodes": [
+    {
+      "name": "3-Hall",
+      "floor": 3,
+      "type": "hall",
+      "connectsTo": [
+        "3-Restroom-M",
+        "3-Restroom-F",
+        "3-Room-3420",
+        "3-Stair-UpTo4",
+        "3-Stair-DownTo2"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.4432,
+          34.0691
+        ]
+      }
+    },
+    {
+      "name": "3-Stair-UpTo4",
+      "floor": 3,
+      "type": "stair",
+      "connectsTo": [
+        "3-Hall",
+        "4-Stair-DownTo3"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.4431,
+          34.069
+        ]
+      }
+    },
+    {
+      "name": "3-Stair-DownTo2",
+      "floor": 3,
+      "type": "stair",
+      "connectsTo": [
+        "3-Hall"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.4433,
+          34.069
+        ]
+      }
+    },
+    {
+      "name": "3-Restroom-M",
+      "floor": 3,
+      "type": "door",
+      "connectsTo": [
+        "3-Hall"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.4432,
+          34.0692
+        ]
+      }
+    },
+    {
+      "name": "3-Restroom-F",
+      "floor": 3,
+      "type": "door",
+      "connectsTo": [
+        "3-Hall"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.44325,
+          34.06925
+        ]
+      }
+    },
+    {
+      "name": "3-Room-3420",
+      "floor": 3,
+      "type": "door",
+      "connectsTo": [
+        "3-Hall"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.4433,
+          34.0693
+        ]
+      }
+    },
+    {
+      "name": "4-Hall",
+      "floor": 4,
+      "type": "hall",
+      "connectsTo": [
+        "4-Restroom-M",
+        "4-Restroom-F",
+        "4-Room-4430",
+        "4-Stair-UpTo5",
+        "4-Stair-DownTo3"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.4434,
+          34.0691
+        ]
+      }
+    },
+    {
+      "name": "4-Stair-UpTo5",
+      "floor": 4,
+      "type": "stair",
+      "connectsTo": [
+        "4-Hall",
+        "5-Stair-DownTo4"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.4435,
+          34.069
+        ]
+      }
+    },
+    {
+      "name": "4-Stair-DownTo3",
+      "floor": 4,
+      "type": "stair",
+      "connectsTo": [
+        "4-Hall",
+        "3-Stair-UpTo4"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.44345,
+          34.06905
+        ]
+      }
+    },
+    {
+      "name": "4-Restroom-M",
+      "floor": 4,
+      "type": "door",
+      "connectsTo": [
+        "4-Hall"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.44335,
+          34.0692
+        ]
+      }
+    },
+    {
+      "name": "4-Restroom-F",
+      "floor": 4,
+      "type": "door",
+      "connectsTo": [
+        "4-Hall"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.4434,
+          34.06925
+        ]
+      }
+    },
+    {
+      "name": "4-Room-4430",
+      "floor": 4,
+      "type": "door",
+      "connectsTo": [
+        "4-Hall"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.4435,
+          34.0693
+        ]
+      }
+    },
+    {
+      "name": "5-Hall",
+      "floor": 5,
+      "type": "hall",
+      "connectsTo": [
+        "5-Restroom-M",
+        "5-Restroom-F",
+        "5-Stair-UpTo8",
+        "5-Stair-DownTo4",
+        "5-Entrance"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.4436,
+          34.0691
+        ]
+      }
+    },
+    {
+      "name": "5-Stair-UpTo8",
+      "floor": 5,
+      "type": "stair",
+      "connectsTo": [
+        "5-Hall",
+        "8-Stair-DownTo5"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.44365,
+          34.069
+        ]
+      }
+    },
+    {
+      "name": "5-Stair-DownTo4",
+      "floor": 5,
+      "type": "stair",
+      "connectsTo": [
+        "5-Hall",
+        "4-Stair-UpTo5"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.44355,
+          34.06905
+        ]
+      }
+    },
+    {
+      "name": "5-Restroom-M",
+      "floor": 5,
+      "type": "door",
+      "connectsTo": [
+        "5-Hall"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.44365,
+          34.0692
+        ]
+      }
+    },
+    {
+      "name": "5-Restroom-F",
+      "floor": 5,
+      "type": "door",
+      "connectsTo": [
+        "5-Hall"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.4437,
+          34.06925
+        ]
+      }
+    },
+    {
+      "name": "8-Hall",
+      "floor": 8,
+      "type": "hall",
+      "connectsTo": [
+        "8-Printer",
+        "8-Stair-DownTo5"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.4438,
+          34.0691
+        ]
+      }
+    },
+    {
+      "name": "8-Stair-DownTo5",
+      "floor": 8,
+      "type": "stair",
+      "connectsTo": [
+        "8-Hall",
+        "5-Stair-UpTo8"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.44385,
+          34.069
+        ]
+      }
+    },
+    {
+      "name": "8-Printer",
+      "floor": 8,
+      "type": "door",
+      "connectsTo": [
+        "8-Hall"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.4438,
+          34.0692
+        ]
+      }
+    },
+    {
+      "name": "5-Entrance",
+      "type": "door",
+      "connectsTo": [
+        "5-Hall"
+      ]
+    }
+  ],
+  "landmarks": [
+    {
+      "name": "3F Restroom (Male)",
+      "type": "male-restroom",
+      "connectedTo": "3-Restroom-M",
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.4432,
+          34.0692
+        ]
+      },
+      "hours": [
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        }
+      ]
+    },
+    {
+      "name": "3F Restroom (Female)",
+      "type": "female-restroom",
+      "connectedTo": "3-Restroom-F",
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.44325,
+          34.06925
+        ]
+      },
+      "hours": [
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        }
+      ]
+    },
+    {
+      "name": "Room 3420",
+      "type": "classroom",
+      "connectedTo": "3-Room-3420",
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.4433,
+          34.0693
+        ]
+      },
+      "hours": [
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        }
+      ]
+    },
+    {
+      "name": "4F Restroom (Male)",
+      "type": "male-restroom",
+      "connectedTo": "4-Restroom-M",
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.44335,
+          34.0692
+        ]
+      },
+      "hours": [
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        }
+      ]
+    },
+    {
+      "name": "4F Restroom (Female)",
+      "type": "female-restroom",
+      "connectedTo": "4-Restroom-F",
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.4434,
+          34.06925
+        ]
+      },
+      "hours": [
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        }
+      ]
+    },
+    {
+      "name": "Room 4430",
+      "type": "classroom",
+      "connectedTo": "4-Room-4430",
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.4435,
+          34.0693
+        ]
+      },
+      "hours": [
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        }
+      ]
+    },
+    {
+      "name": "5F Restroom (Male)",
+      "type": "male-restroom",
+      "connectedTo": "5-Restroom-M",
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.44365,
+          34.0692
+        ]
+      },
+      "hours": [
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        }
+      ]
+    },
+    {
+      "name": "5F Restroom (Female)",
+      "type": "female-restroom",
+      "connectedTo": "5-Restroom-F",
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          -118.4437,
+          34.06925
+        ]
+      },
+      "hours": [
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        },
+        {
+          "isOpen": true,
+          "open": 0,
+          "close": 1439
+        }
+      ]
+    },
+    {
+      "name": "8-Printer",
+      "type": "printer",
+      "connectedTo": "8-Printer",
+      "location": { "type": "Point", "coordinates": [-118.4438, 34.0692] },
+      "hours": [
+        { "isOpen": true, "open": 0, "close": 1439 },
+        { "isOpen": true, "open": 0, "close": 1439 },
+        { "isOpen": true, "open": 0, "close": 1439 },
+        { "isOpen": true, "open": 0, "close": 1439 },
+        { "isOpen": true, "open": 0, "close": 1439 },
+        { "isOpen": true, "open": 0, "close": 1439 },
+        { "isOpen": true, "open": 0, "close": 1439 }
+      ]
+    },
+    {
+      "name": "Boelter Entrance",
+      "type": "building",
+      "connectedTo": "5-Entrance"
+    }
+  ]
+}
