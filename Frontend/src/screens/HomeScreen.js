@@ -7,7 +7,6 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <Search></Search>
       <Text style={styles.title}>Welcome to BruinNav 🎓📍</Text>
-    
     </View>
   );
 }
