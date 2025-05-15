@@ -31,6 +31,39 @@ const knownTypes = [
   "neutral-restroom"
 ];
 
+/**
+ * Compress consecutive stair nodes in the path.
+ * If two consecutive nodes are both stairs and on different floors,
+ * they represent the two ends of the same staircase.
+ * To simplify the path, we keep only the first stair node.
+ */
+function compressStairs(pathIds, id2name) {
+  const out = [];
+
+  for (const id of pathIds) {
+    const currName = id2name[id];
+    const prevId   = out[out.length - 1];
+    const prevName = id2name[prevId];
+
+    // If both current and previous nodes are stairs, and on different floors,
+    // treat them as one stair segment and skip the second.
+    if (prevName && isStair(prevName) && isStair(currName) &&
+        getFloor(prevName) !== getFloor(currName)) {
+      continue;
+    }
+
+    out.push(id);
+  }
+
+  return out;
+}
+
+// Helper: extract floor number from node name like "4-Stair-UpTo5"
+const stairRe  = /^(\d+)-Stair/;
+const isStair  = (name) => name?.includes("Stair");
+const getFloor = (name) => Number(name.match(stairRe)?.[1] || NaN);
+
+
 // ------------------------------------------------------------------
 // GET /api/path?from=...&to=...[&mode=bfs|graph]
 // ------------------------------------------------------------------
@@ -110,7 +143,9 @@ router.get("/", async (req, res) => {
     .select("name")
     .lean();
   const id2name = Object.fromEntries(nodes.map((n) => [n._id.toString(), n.name]));
-
+  // Compress stair nodes
+  pathIds = compressStairs(pathIds, id2name);
+  
   const steps = pathIds.map((id, depth) => ({
     id,
     name: id2name[id],
