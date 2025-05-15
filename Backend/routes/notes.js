@@ -1,6 +1,7 @@
-const express = require("express");
+import express from "express";
+import Note from "../models/Note.js";
+
 const router = express.Router();
-const Note = require("../models/Note");
 
 // Get all notes
 router.get("/", async (req, res) => {
@@ -15,4 +16,4 @@ router.post("/", async (req, res) => {
   res.json(saved);
 });
 
-module.exports = router;
+export default router;
