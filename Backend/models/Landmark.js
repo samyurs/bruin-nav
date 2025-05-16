@@ -10,24 +10,12 @@ export const LANDMARK_TYPES = [
     'printer'
 ];
 
-const LandmarkSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    type: { type: String, enum: LANDMARK_TYPES },
-    location: GeoJSONSchema,
-    hours: {
-        type: [HoursSchema],
-        validate: { validator: hours => hours.length === 7 },
-    },
-    parent: { type: mongoose.Types.ObjectId, ref: 'Landmark' },
-});
-LandmarkSchema.index({ name: 'text', location: '2dsphere' });
-
+// Define HoursSchema before using it in LandmarkSchema
 const HoursSchema = new mongoose.Schema({
     isOpen: { type: Boolean, required: true },
     open: {
         type: Number,
         min: 0,
-        max: function() { return this.close; },
         required: function() { return this.isOpen; },
     },
     close: {
@@ -37,6 +25,15 @@ const HoursSchema = new mongoose.Schema({
     },
 }, { _id: false });
 
+// Custom validator to ensure 'open' is always before 'close' when 'isOpen' is true
+HoursSchema.pre('validate', function(next) {
+    if (this.isOpen && this.open > this.close) {
+        this.invalidate('open', 'Open time must be less than or equal to close time');
+    }
+    next();
+});
+
+// Define GeoJSONSchema before using it in LandmarkSchema
 const GeoJSONSchema = new mongoose.Schema({
     type: { type: String, enum: ['Point'], required: true },
     coordinates: {
@@ -51,5 +48,19 @@ const GeoJSONSchema = new mongoose.Schema({
         }
     }
 }, { _id: false });
+
+// Define LandmarkSchema after HoursSchema and GeoJSONSchema are defined
+const LandmarkSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    type: { type: String, enum: LANDMARK_TYPES },
+    location: GeoJSONSchema,
+    hours: {
+        type: [HoursSchema],
+        validate: { validator: hours => hours.length === 7 },
+    },
+    parent: { type: mongoose.Types.ObjectId, ref: 'Landmark' },
+});
+
+LandmarkSchema.index({ name: 'text', location: '2dsphere' });
 
 export default mongoose.models.Landmark || mongoose.model('Landmark', LandmarkSchema);

@@ -2,7 +2,7 @@ import 'dotenv/config';
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import { landmarksRouter, usersRouter, notesRouter } from './routes';
+import { landmarksRouter, usersRouter, notesRouter } from './routes/index.js';
 
 const PORT = process.env.PORT || 5050;
 
