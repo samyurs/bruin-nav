@@ -19,7 +19,7 @@ const express  = require("express");
 const router   = express.Router();
 const mongoose = require("mongoose");
 
-const Landmark   = require("../models/Landmark");
+const Landmark = require("../models/Landmark");
 const IndoorNode = require("../models/IndoorNode");
 
 // Allowed categories that a client can pass as `to=printer` etc.
@@ -30,6 +30,29 @@ const knownTypes = [
   "female-restroom",
   "neutral-restroom"
 ];
+
+// Keep the time consistent (use Los Angeles time)
+const laTZ = "America/Los_Angeles";
+function nowLA () {
+  return new Date().toLocaleString("en-US", { timeZone: laTZ });
+}
+
+function isOpenNow(hoursArr, now = new Date()) {
+  if (!Array.isArray(hoursArr) || hoursArr.length !== 7) return true;
+
+  const day = now.getDay();
+  const mins = now.getHours() * 60 + now.getMinutes();
+  const h = hoursArr[day];
+
+  if (!h?.isOpen) return false;
+  if (mins < h.open || mins > h.close) return false;
+  return true;
+}
+
+// Determine whether the current node is reachable by the target user.
+function isNodeAccessible(nodeDoc, needAccessible) {
+  return !needAccessible || nodeDoc.accessible !== false;
+}
 
 /**
  * Compress consecutive stair nodes in the path.
@@ -57,6 +80,14 @@ function compressStairs(pathIds, id2name) {
 
   return out;
 }
+  // Determine whether a landmark is currently open and accessible. （Still exist bugs)
+function isLandmarkAvailable(lm) {
+  const okTime = isOpenNow(lm.hours, new Date(nowLA()));
+  const okAcc = lm.accessible === undefined || lm.accessible === true;
+  // console.log(`🧪 [${lm.name}] openNow=${okTime} accessible=${lm.accessible} ⇒ ok=${okTime && okAcc}`);
+  return okTime && okAcc;
+}
+
 
 // Helper: extract floor number from node name like "4-Stair-UpTo5"
 const stairRe  = /^(\d+)-Stair/;
@@ -70,7 +101,7 @@ const getFloor = (name) => Number(name.match(stairRe)?.[1] || NaN);
 router.get("/", async (req, res) => {
   // default to BFS so we always return a shortest path
   const { from, to, mode = "bfs" } = req.query;
-
+  const needAccessible = true; // default to accessible
   if (!from || !to) {
     return res.status(400).json({ error: "`from` and `to` are required" });
   }
@@ -92,7 +123,7 @@ router.get("/", async (req, res) => {
 
   // 2‑A. `to` is a *category*  (printer / restroom / …) ---------------------
   if (knownTypes.includes(to)) {
-    const nearest = await findNearestLandmarkByType(srcNodeId.toString(), to);
+    const nearest = await findNearestLandmarkByType(srcNodeId.toString(), to, needAccessible);
     if (!nearest) {
       return res
         .status(404)
@@ -107,8 +138,8 @@ router.get("/", async (req, res) => {
   // 2‑B. `to` is an explicit *landmark name* --------------------------------
   else {
     dstL = await Landmark.findOne({ name: to });
-    if (!dstL) {
-      return res.status(404).json({ error: "Destination landmark not found" });
+    if (!(await isLandmarkAvailable(dstL, needAccessible))) {
+      return res.status(404).json({ error: "Destination landmark is not available" });
     }
 
     const [dstNodeId] = dstL.connectedTo || [];
@@ -121,7 +152,8 @@ router.get("/", async (req, res) => {
     // 2‑B‑1  Baseline — always run BFS first (guaranteed shortest)
     const bfsPath = await bfsSearch(
       srcNodeId.toString(),
-      dstNodeId.toString()
+      dstNodeId.toString(),
+      needAccessible
     );
     if (!bfsPath) return res.status(404).json({ error: "No route found" });
 
@@ -163,7 +195,7 @@ router.get("/", async (req, res) => {
 // ------------------------------------------------------------------
 // Helper: BFS outward until the first landmark of type xyz is found
 // ------------------------------------------------------------------
-async function findNearestLandmarkByType(startNodeId, type) {
+async function findNearestLandmarkByType(startNodeId, type, needAccessible) {
   const queue   = [[startNodeId]];
   const visited = new Set([startNodeId]);
 
@@ -172,14 +204,17 @@ async function findNearestLandmarkByType(startNodeId, type) {
     const nodeId = path.at(-1);
 
     // Is there a landmark of this type attached to *this* node?
-    const lm = await Landmark.findOne({ connectedTo: nodeId, type });
-    if (lm) return { landmark: lm, path };
-
+    const lm = await Landmark.findOne({ connectedTo: nodeId, type }).lean();
+    if (lm && await isLandmarkAvailable(lm)) {
+      return { landmark: lm, path };
+    }
     // Expand neighbours
-    const node = await IndoorNode.findById(nodeId).select("connectsTo");
+    const node = await IndoorNode.findById(nodeId).select("connectsTo accessible");
     for (const nextId of node.connectsTo) {
       const str = nextId.toString();
       if (!visited.has(str)) {
+        const nextDoc = await IndoorNode.findById(nextId).select("accessible");
+        if (!isNodeAccessible(nextDoc, needAccessible)) continue; // Skip unreachable nodes
         visited.add(str);
         queue.push([...path, str]);
       }
@@ -221,7 +256,7 @@ async function runGraph(srcNodeId, dstNodeId) {
 // ------------------------------------------------------------------
 // Helper: plain JavaScript BFS — guarantees shortest path
 // ------------------------------------------------------------------
-async function bfsSearch(startId, endId) {
+async function bfsSearch(startId, endId, needAccessible) {
   const queue   = [[startId]];
   const visited = new Set([startId]);
 
@@ -230,10 +265,12 @@ async function bfsSearch(startId, endId) {
     const nodeId = path.at(-1);
     if (nodeId === endId) return path;
 
-    const node = await IndoorNode.findById(nodeId).select("connectsTo");
+    const node = await IndoorNode.findById(nodeId).select("connectsTo accessible");
     for (const nextId of node.connectsTo) {
       const str = nextId.toString();
       if (!visited.has(str)) {
+        const nextDoc = await IndoorNode.findById(nextId).select("accessible");
+        if (!isNodeAccessible(nextDoc, needAccessible)) continue;
         visited.add(str);
         queue.push([...path, str]);
       }

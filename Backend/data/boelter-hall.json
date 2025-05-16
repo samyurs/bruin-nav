@@ -727,13 +727,13 @@
       "connectedTo": "8-Printer",
       "location": { "type": "Point", "coordinates": [-118.4438, 34.0692] },
       "hours": [
-        { "isOpen": true, "open": 0, "close": 1439 },
-        { "isOpen": true, "open": 0, "close": 1439 },
-        { "isOpen": true, "open": 0, "close": 1439 },
-        { "isOpen": true, "open": 0, "close": 1439 },
-        { "isOpen": true, "open": 0, "close": 1439 },
-        { "isOpen": true, "open": 0, "close": 1439 },
-        { "isOpen": true, "open": 0, "close": 1439 }
+        { "isOpen": true, "open": 480, "close": 1260 },
+        { "isOpen": true, "open": 480, "close": 1439 },
+        { "isOpen": true, "open": 480, "close": 1439 },
+        { "isOpen": true, "open": 480, "close": 1439 }, 
+        { "isOpen": true, "open": 480, "close": 1439 },
+        { "isOpen": true, "open": 480, "close": 1439 },
+        { "isOpen": true, "open": 480, "close": 1260 }
       ]
     },
     {

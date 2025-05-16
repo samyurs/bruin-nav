@@ -28,6 +28,19 @@ HoursSchema.pre("validate", function (next) {
   }
   next();
 });
+// Tool function: Determine whether a landmark is currently open (using Los Angeles time)
+HoursSchema.statics.isOpenNow = function (hoursArr, now = new Date()) {
+  if (!Array.isArray(hoursArr) || hoursArr.length !== 7) return true;
+
+  const day  = now.getDay();                      // 0 = Sunday, 6 = Saturday
+  const mins = now.getHours() * 60 + now.getMinutes(); // Current minute of day
+
+  const h = hoursArr[day];                     
+  if (!h?.isOpen) return false;
+  if (mins < h.open || mins > h.close) return false;
+  return true;
+};
+
 
 const GeoJSONSchema = new mongoose.Schema({
     type: { type: String, enum: ['Point'], required: true },
@@ -61,7 +74,7 @@ const LandmarkSchema = new mongoose.Schema({
         validate: { validator: hours => hours.length === 7 },
     },
     parent: { type: mongoose.Types.ObjectId, ref: 'Landmark' },
-    
+    accessible: { type: Boolean, default: true },
     //  Landmark is linked to one or more IndoorNodes
     connectedTo: [{ type: mongoose.Schema.Types.ObjectId, ref: 'IndoorNode' }]
 });
