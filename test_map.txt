@@ -1,0 +1,38 @@
+UCLA Map Endpoint Test Instructions
+=====================================
+
+ Prerequisite:
+1. Make sure backend is running: `node server.js`
+2. Make sure frontend is launched (optional for now)
+3. Open a new terminal in `bruin-nav` root folder to run tests
+
+ Testing `GET /api/map/nearest`:
+
+Test 1: Nearest restroom (no gender/accessibility filter)
+---------------------------------------------------------
+ command: curl "http://localhost:5050/api/map/nearest?lat=34.0690&lng=-118.443&type=restroom"
+
+Expected: Boelter Hall - Men's Restroom (floor 1)
+
+Test 2: Nearest accessible female restroom
+------------------------------------------
+curl "http://localhost:5050/api/map/nearest?lat=34.069&lng=-118.443&type=restroom&gender=female&accessible=true"
+
+Expected: Boelter Hall - Women's Restroom (floor 1)
+
+Test 3: Nearest accessible printer near Royce
+---------------------------------------------
+curl "http://localhost:5050/api/map/nearest?lat=34.0710&lng=-118.4419&type=printer&accessible=true"
+
+Expected: Kerckhoff Hall - Printer (floor 1)
+
+Test 4: Nearest printer (no filter)
+-----------------------------------
+curl "http://localhost:5050/api/map/nearest?lat=34.069&lng=-118.443&type=printer"
+
+Expected: Boelter Hall - Printer Station (floor 3)
+
+ Note:
+- All responses should be JSON objects with full facility info
+- Facilities must be open based on current time and day
+- You can test `restroom`, `printer`, and filters like `gender=unisex` too
