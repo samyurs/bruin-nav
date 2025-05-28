@@ -1,4 +1,14 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+
+export const LANDMARK_TYPES = [
+    'building',
+    'male-restroom',
+    'female-restroom',
+    'neutral-restroom',
+    'study-spot',
+    'classroom',
+    'printer'
+];
 
 /**
  * Landmark represents a real-world place a user cares about,
@@ -59,15 +69,7 @@ const GeoJSONSchema = new mongoose.Schema({
 
 const LandmarkSchema = new mongoose.Schema({
     name: { type: String, required: true },
-    type: { type: String, enum: [
-        'building',
-        'male-restroom',
-        'female-restroom',
-        'neutral-restroom',
-        'study-spot',
-        'classroom',
-        'printer'
-    ] },
+    type: { type: String, enum: LANDMARK_TYPES },
     location: GeoJSONSchema,
     hours: {
         type: [HoursSchema],
@@ -79,6 +81,23 @@ const LandmarkSchema = new mongoose.Schema({
     connectedTo: [{ type: mongoose.Schema.Types.ObjectId, ref: 'IndoorNode' }]
 });
 
+LandmarkSchema.index({ name: 'text', location: '2dsphere' });
+
+const HoursSchema = new mongoose.Schema({
+    isOpen: { type: Boolean, required: true },
+    open: {
+        type: Number,
+        min: 0,
+        max: function() { return this.close; },
+        required: function() { return this.isOpen; },
+    },
+    close: {
+        type: Number,
+        max: 1439,
+        required: function() { return this.isOpen; }
+    },
+}, { _id: false });
+
 LandmarkSchema.index({ location: '2dsphere' });
 
-module.exports = mongoose.models.Landmark || mongoose.model('Landmark', LandmarkSchema);
+export default mongoose.models.Landmark || mongoose.model('Landmark', LandmarkSchema);
