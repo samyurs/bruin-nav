@@ -8,7 +8,7 @@ const landmarkQuerySchema = z
     .object({
         search: z.string().optional(),
         type: z.enum(LANDMARK_TYPES).optional(),
-        latitude: z.coerce.number()
+        /*latitude: z.coerce.number()
             .refine(x => !isNaN(x), { message: 'Latitude must be a number' })
             .gte(-90).lte(90)
             .optional(),
@@ -19,7 +19,21 @@ const landmarkQuerySchema = z
         maxDistance: z.coerce.number()
             .refine(x => !isNaN(x), { message: 'Max distance must be a number' })
             .gte(0)
-            .optional()
+            .optional()*/
+        latitude: z.coerce.number()
+            .gte(-90, { message: 'Latitude must be >= -90' })
+            .lte(90, { message: 'Latitude must be <= 90' })
+            .refine(x => !isNaN(x), { message: 'Latitude must be a number' })
+            .optional(),
+        longitude: z.coerce.number()
+            .gte(-180, { message: 'Longitude must be >= -180' })
+            .lte(180, { message: 'Longitude must be <= 180' })
+            .refine(x => !isNaN(x), { message: 'Longitude must be a number' })
+            .optional(),
+          maxDistance: z.coerce.number()
+            .gte(0, { message: 'Max distance must be >= 0' })
+            .refine(x => !isNaN(x), { message: 'Max distance must be a number' })
+            .optional(),
     })
     .refine(
         data => (data.latitude === undefined) === (data.longitude === undefined),

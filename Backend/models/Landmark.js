@@ -83,7 +83,7 @@ const LandmarkSchema = new mongoose.Schema({
 
 LandmarkSchema.index({ name: 'text', location: '2dsphere' });
 
-const HoursSchema = new mongoose.Schema({
+/*const HoursSchema = new mongoose.Schema({
     isOpen: { type: Boolean, required: true },
     open: {
         type: Number,
@@ -96,7 +96,7 @@ const HoursSchema = new mongoose.Schema({
         max: 1439,
         required: function() { return this.isOpen; }
     },
-}, { _id: false });
+}, { _id: false });*/
 
 LandmarkSchema.index({ location: '2dsphere' });
 
