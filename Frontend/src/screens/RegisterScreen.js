@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { API_BASE_URL } from '@env';
 
 export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -7,7 +8,7 @@ export default function RegisterScreen({ navigation }) {
 
   const handleRegister = async () => {
     try {
-      const res = await fetch("http://localhost:5050/api/users/register", {
+      const res = await fetch(`${API_BASE_URL}/users/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
