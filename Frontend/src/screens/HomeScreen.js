@@ -18,12 +18,13 @@ const styles = StyleSheet.create({
 
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import Maps from '../components/Maps.js';
 
 export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to BruinNav 🎓📍</Text>
-
+     
+      <Maps />
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Profile')}>
         <Text style={styles.buttonText}>Go to Profile</Text>
       </TouchableOpacity>
