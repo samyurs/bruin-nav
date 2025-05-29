@@ -1,34 +1,35 @@
 import React, { useState } from 'react';
 import { View, TextInput, FlatList, Text, StyleSheet } from 'react-native';
 import styles from './SearchStyles';
+import React, { useEffect } from 'react';
+const LANDMARK_API_URL = 'http://localhost:5050/api/landmarks';
 
 function Search() {
   const [inputValue, setInputValue] = useState('');
   const [filterOptions, setFilterOptions] = useState([]);
   const [submittedText, setSubmittedText] = useState(''); // Track the submitted value
+  const [uclaBuildings, setUclaBuildings] = useState([]);
 
-  const uclaBuildings = [
-    "Royce Hall",
-    "Powell Library",
-    "Young Research Library",
-    "Perloff Hall",
-    "Boelter Hall",
-    "Math Sciences Building",
-    "Theater Arts Building",
-    "Bruin Plaza",
-    "Cohen Hall",
-    "Gonda Center",
-    "Stewart Hall",
-    "Dodd Hall",
-    "Engineering VI",
-    "Schoenberg Hall",
-    "Kaufman Hall",
-    "Haines Hall",
-    "Chavez Auditorium",
-    "Faculty Center",
-    "Math 2000",
-    "Strathmore Building"
-  ];
+useEffect (()=>{
+  const loadLandmarks = async () => {try { 
+    const raw_landmark_data = await fetch(LANDMARK_API_URL);
+
+    if (!raw_landmark_data){
+      alert ("Can Not Retreive LandMarkData!");
+      raw_landmark_data={};  //I have added empty arrays and alerts if this fails and not errors so the app can still run (may change later to actuall error catches)
+     }
+ landmark_data = await raw_landmark_data.json();
+  const uclaBuildings_names = landmark_data.landmarks ? landmark_data.landmarks.map(landmark => landmark.name) : [];
+ setUclaBuildings(uclaBuildings_names);
+}
+ 
+ catch (error){
+  alert("Error retriving buildings");
+  setUclaBuildings([]);
+ }};
+ loadLandmarks();
+  },[]);
+  
 
   const options = (text) => {
   
