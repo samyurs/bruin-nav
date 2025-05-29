@@ -1,4 +1,14 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+
+export const LANDMARK_TYPES = [
+    'building',
+    'male-restroom',
+    'female-restroom',
+    'neutral-restroom',
+    'study-spot',
+    'classroom',
+    'printer'
+];
 
 /**
  * Landmark represents a real-world place a user cares about,
@@ -29,6 +39,19 @@ HoursSchema.pre("validate", function (next) {
   next();
 });
 
+// Tool function: Determine whether a landmark is currently open (using Los Angeles time)
+HoursSchema.statics.isOpenNow = function (hoursArr, now = new Date()) {
+  if (!Array.isArray(hoursArr) || hoursArr.length !== 7) return true;
+
+  const day  = now.getDay();                      // 0 = Sunday, 6 = Saturday
+  const mins = now.getHours() * 60 + now.getMinutes(); // Current minute of day
+
+  const h = hoursArr[day];                     
+  if (!h?.isOpen) return false;
+  if (mins < h.open || mins > h.close) return false;
+  return true;
+};
+
 const GeoJSONSchema = new mongoose.Schema({
     type: { type: String, enum: ['Point'], required: true },
     coordinates: {
@@ -46,26 +69,35 @@ const GeoJSONSchema = new mongoose.Schema({
 
 const LandmarkSchema = new mongoose.Schema({
     name: { type: String, required: true },
-    type: { type: String, enum: [
-        'building',
-        'male-restroom',
-        'female-restroom',
-        'neutral-restroom',
-        'study-spot',
-        'classroom',
-        'printer'
-    ] },
+    type: { type: String, enum: LANDMARK_TYPES },
     location: GeoJSONSchema,
     hours: {
         type: [HoursSchema],
         validate: { validator: hours => hours.length === 7 },
     },
     parent: { type: mongoose.Types.ObjectId, ref: 'Landmark' },
-    
+    accessible: { type: Boolean, default: true },
     //  Landmark is linked to one or more IndoorNodes
     connectedTo: [{ type: mongoose.Schema.Types.ObjectId, ref: 'IndoorNode' }]
 });
+
+LandmarkSchema.index({ name: 'text', location: '2dsphere' });
+
+/*const HoursSchema = new mongoose.Schema({
+    isOpen: { type: Boolean, required: true },
+    open: {
+        type: Number,
+        min: 0,
+        max: function() { return this.close; },
+        required: function() { return this.isOpen; },
+    },
+    close: {
+        type: Number,
+        max: 1439,
+        required: function() { return this.isOpen; }
+    },
+}, { _id: false });*/
+
 LandmarkSchema.index({ location: '2dsphere' });
 
-
-module.exports = mongoose.models.Landmark || mongoose.model('Landmark', LandmarkSchema);
+export default mongoose.models.Landmark || mongoose.model('Landmark', LandmarkSchema);

@@ -1,7 +1,8 @@
-const express = require("express");
-const bcrypt = require("bcryptjs");
+import express from "express";
+import bcrypt from "bcryptjs";
+import User from "../models/User.js";
+
 const router = express.Router();
-const User = require("../models/User");
 
 // Register
 router.post("/register", async (req, res) => {
@@ -38,4 +39,30 @@ router.post("/login", async (req, res) => {
   }
 });
 
-module.exports = router;
+// Update user email and/or password
+router.patch("/update", async (req, res) => {
+  const { currentEmail, newEmail, currentPassword, newPassword } = req.body;
+
+  try {
+    const user = await User.findOne({ email: currentEmail });
+    if (!user) return res.status(404).json({ msg: "User not found" });
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) return res.status(401).json({ msg: "Incorrect password" });
+
+    // Update email and/or password
+    if (newEmail) user.email = newEmail;
+    if (newPassword) {
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedPassword;
+    }
+
+    await user.save();
+    res.json({ msg: "Account updated successfully" });
+  } catch (err) {
+    console.error("Update error:", err);
+    res.status(500).json({ msg: "Server error" });
+  }
+});
+
+export default router;

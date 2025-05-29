@@ -15,7 +15,7 @@ const IndoorNodeSchema = new mongoose.Schema({
     enum: ['hall', 'stair', 'elevator', 'door',],
     default: 'hall'
   },
-
+  accessible: { type: Boolean, default: true },
   // List of other IndoorNode _id's this node connects to (graph edge)
   connectsTo: [{ type: mongoose.Schema.Types.ObjectId, ref: 'IndoorNode' }]
 });

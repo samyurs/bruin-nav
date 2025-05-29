@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
- // Used for "user comment system related to facilities"
+import mongoose from "mongoose";
+
 const NoteSchema = new mongoose.Schema({
   building: String,
   text: String,
@@ -17,4 +17,4 @@ const NoteSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Note", NoteSchema);
+export default mongoose.model("Note", NoteSchema);
