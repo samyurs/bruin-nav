@@ -1,97 +1,185 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# BruinNav Frontend
 
-# Getting Started
+BruinNav is a mobile app designed to help UCLA students navigate, understand, and connect with UCLA's complex and historic campus.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Features
 
-## Step 1: Start Metro
+- **Interactive Map**: Google Maps integration with UCLA campus landmarks
+- **Smart Search**: Find buildings, restrooms, study spots, and amenities
+- **Community Notes**: Student-powered tips and information sharing
+- **Building Details**: Hours, floor plans, and amenity information
+- **User Profiles**: Personal accounts with post history and preferences
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## Prerequisites
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+Before you begin, ensure you have the following installed:
 
-```sh
-# Using npm
+- **Node.js** (18 or newer)
+- **React Native CLI**: `npm install -g @react-native-community/cli`
+- **JDK 17** (for Android development)
+- **Android Studio** with Android SDK (for Android development)
+- **Xcode** (for iOS development, macOS only)
+
+## Setup Instructions
+
+### 1. Clone and Install Dependencies
+
+```bash
+git clone <repository-url>
+cd Frontend
+npm install
+```
+
+### 2. Environment Configuration
+
+Create a `.env` file in the Frontend directory:
+
+```env
+# Google Maps API Key
+GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
+
+# Backend API URL
+API_BASE_URL=http://localhost:5050
+
+# Firebase Configuration (if needed)
+FIREBASE_API_KEY=your_firebase_api_key_here
+FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+FIREBASE_PROJECT_ID=your_project_id
+```
+
+### 3. Google Maps API Setup
+
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Enable the Maps SDK for Android and iOS
+4. Create credentials (API Key)
+5. Add the API key to your `.env` file
+6. For Android: Update `android/app/src/main/AndroidManifest.xml` with your API key:
+   ```xml
+   <meta-data
+     android:name="com.google.android.geo.API_KEY"
+     android:value="YOUR_ACTUAL_API_KEY_HERE" />
+   ```
+
+### 4. iOS Setup
+
+```bash
+cd ios
+pod install
+cd ..
+```
+
+### 5. Android Setup
+
+1. Open Android Studio
+2. Open the `android` folder as an Android project
+3. Let Gradle sync complete
+4. Ensure you have an Android Virtual Device (AVD) set up
+
+## Running the App
+
+### Start Metro Bundler
+
+```bash
 npm start
-
-# OR using Yarn
-yarn start
 ```
 
-## Step 2: Build and run your app
+### Run on iOS
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
-```
-
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
+```bash
 npm run ios
-
-# OR using Yarn
-yarn ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+### Run on Android
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+```bash
+npm run android
+```
 
-## Step 3: Modify your app
+## Project Structure
 
-Now that you have successfully run the app, let's make changes!
+```
+Frontend/
+├── src/
+│   ├── screens/          # App screens
+│   │   ├── MapScreen.js
+│   │   ├── PostsScreen.js
+│   │   ├── ProfileScreen.js
+│   │   ├── LoginScreen.js
+│   │   └── ...
+│   ├── navigation/       # Navigation configuration
+│   └── assets/          # Images and static assets
+├── android/             # Android-specific code
+├── ios/                 # iOS-specific code
+└── package.json
+```
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+## Key Dependencies
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+- **React Native**: 0.79.1
+- **React Navigation**: Bottom tabs and stack navigation
+- **React Native Maps**: Google Maps integration
+- **React Native Vector Icons**: Icon library
+- **AsyncStorage**: Local data storage
+- **React Native Geolocation**: Location services
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+## Development Notes
 
-## Congratulations! :tada:
+### Android Permissions
 
-You've successfully run and modified your React Native App. :partying_face:
+The app requires the following permissions:
+- `ACCESS_FINE_LOCATION`: For precise location tracking
+- `ACCESS_COARSE_LOCATION`: For approximate location
+- `INTERNET`: For API calls and map data
 
-### Now what?
+### iOS Permissions
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+Add location permissions to `ios/BruinNavFrontend/Info.plist`:
+```xml
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>BruinNav needs location access to show your position on the map</string>
+```
 
-# Troubleshooting
+## Troubleshooting
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+### Common Issues
 
-# Learn More
+1. **Metro bundler issues**: Clear cache with `npx react-native start --reset-cache`
+2. **Android build failures**: Clean and rebuild with `cd android && ./gradlew clean && cd ..`
+3. **iOS build failures**: Clean build folder in Xcode or run `cd ios && xcodebuild clean && cd ..`
+4. **Maps not showing**: Verify your Google Maps API key is correct and has proper permissions
 
-To learn more about React Native, take a look at the following resources:
+### Android Specific
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+- Ensure Android SDK is properly installed
+- Check that ANDROID_HOME environment variable is set
+- Verify emulator is running or device is connected
+
+### iOS Specific
+
+- Ensure Xcode command line tools are installed: `xcode-select --install`
+- Check that iOS Simulator is available
+- Verify CocoaPods is installed: `sudo gem install cocoapods`
+
+## Backend Integration
+
+The app is designed to work with a Node.js/Express backend. Update the `API_BASE_URL` in your `.env` file to point to your backend server.
+
+Expected API endpoints:
+- `GET /api/landmarks` - Fetch campus landmarks
+- `GET /api/notes` - Fetch community posts
+- `POST /api/notes` - Create new posts
+- `POST /api/users/login` - User authentication
+- `POST /api/users/register` - User registration
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test on both iOS and Android
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
