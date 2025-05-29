@@ -14,10 +14,11 @@ export default function LoginScreen({ navigation }) {
         body: JSON.stringify({ email, password }),
       });
 
+      const data = await res.json();
+
       if (res.ok) {
-        navigation.navigate('Home');  // ✅ Navigate to Home on success
+        navigation.navigate('Home', { email, displayName: data.displayName });
       } else {
-        const data = await res.json();
         Alert.alert("Login Failed", data.msg || "Invalid credentials");
       }
     } catch (err) {
@@ -83,7 +84,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#000',
     marginBottom: 32,
-    fontFamily: 'System', // or 'Inter' if using a custom font
+    fontFamily: 'System',
   },
   input: {
     width: '100%',
@@ -95,7 +96,6 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     fontSize: 16,
     marginBottom: 20,
-    fontFamily: 'System',
   },
   button: {
     backgroundColor: '#fff5c8',
@@ -111,19 +111,16 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#595959',
     fontWeight: '600',
-    fontFamily: 'System',
   },
   newText: {
     fontSize: 16,
     marginBottom: 10,
     color: '#000',
-    fontFamily: 'System',
   },
   signUp: {
     fontWeight: 'bold',
     color: '#000',
     fontSize: 16,
-    fontFamily: 'System',
   },
   createButton: {
     backgroundColor: '#ffdc3d',
@@ -138,6 +135,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#000',
     fontWeight: '600',
-    fontFamily: 'System',
   },
 });

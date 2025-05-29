@@ -1,28 +1,16 @@
-/*import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-
-export default function HomeScreen() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome to BruinNav 🎓📍</Text>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'flex-start', paddingTop: 300, alignItems: 'center' },
-  title: { fontSize: 22, fontWeight: 'bold' }
-});*/
-
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
-export default function HomeScreen({ navigation }) {
+export default function HomeScreen({ navigation, route }) {
+  const { email, displayName } = route.params || {};
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to BruinNav 🎓📍</Text>
-
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Profile')}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('Profile', { email, displayName })}
+      >
         <Text style={styles.buttonText}>Go to Profile</Text>
       </TouchableOpacity>
     </View>

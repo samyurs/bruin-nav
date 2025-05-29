@@ -4,6 +4,7 @@ import { API_BASE_URL } from '@env';
 
 export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
@@ -17,14 +18,15 @@ export default function RegisterScreen({ navigation }) {
       const res = await fetch(`${API_BASE_URL}/users/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, displayName }),
       });
+
+      const data = await res.json();
 
       if (res.ok) {
         Alert.alert("Success", "Account created!");
         navigation.navigate('Login');
       } else {
-        const data = await res.json();
         Alert.alert("Registration Failed", data.msg || "Something went wrong");
       }
     } catch (err) {
@@ -35,6 +37,15 @@ export default function RegisterScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.label}>Display Name</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Your name"
+        placeholderTextColor="#666"
+        value={displayName}
+        onChangeText={setDisplayName}
+      />
+
       <Text style={styles.label}>Email address</Text>
       <TextInput
         style={styles.input}

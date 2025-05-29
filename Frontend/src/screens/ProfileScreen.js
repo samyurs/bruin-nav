@@ -1,87 +1,95 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { API_BASE_URL } from '@env';
+import React from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 
-export default function ProfileScreen() {
-  const [currentEmail, setCurrentEmail] = useState('');
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newEmail, setNewEmail] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-
-  const handleUpdate = async () => {
-    try {
-      const res = await fetch(`${API_BASE_URL}/users/update`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          currentEmail,
-          currentPassword,
-          newEmail,
-          newPassword
-        }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        Alert.alert("Success", data.msg);
-      } else {
-        Alert.alert("Error", data.msg);
-      }
-    } catch (err) {
-      console.error(err);
-      Alert.alert("Error", "Something went wrong");
-    }
-  };
+export default function ProfileScreen({ route, navigation }) {
+  const { email, displayName } = route.params || {};
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Update Your Account</Text>
+      <View style={styles.headerRow}>
+        <Image source={require('../assets/logo.png')} style={styles.icon} />
+        <View style={styles.usernameBox}>
+          <Text style={styles.username}>@{email}</Text>
+        </View>
+      </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Current Email"
-        value={currentEmail}
-        onChangeText={setCurrentEmail}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Current Password"
-        secureTextEntry
-        value={currentPassword}
-        onChangeText={setCurrentPassword}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="New Email (optional)"
-        value={newEmail}
-        onChangeText={setNewEmail}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="New Password (optional)"
-        secureTextEntry
-        value={newPassword}
-        onChangeText={setNewPassword}
-      />
+      <View style={styles.profileSection}>
+        <View style={styles.profilePicPlaceholder}>
+          <Text style={styles.profileIcon}>👤</Text>
+        </View>
+        <Text style={styles.name}>{displayName || 'name'}</Text>
 
-      <TouchableOpacity style={styles.button} onPress={handleUpdate}>
-        <Text style={styles.buttonText}>Update Account</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={() => navigation.navigate('Settings', { email, displayName })}
+        >
+          <Text style={styles.editButtonText}>edit profile</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingTop: 100, paddingHorizontal: 32, backgroundColor: '#fff' },
-  title: { fontSize: 26, fontWeight: 'bold', marginBottom: 30, textAlign: 'center' },
-  input: {
-    borderWidth: 1, borderColor: '#ccc', borderRadius: 8,
-    padding: 12, fontSize: 16, marginBottom: 16, backgroundColor: '#f9f9f9'
+  container: {
+    flex: 1,
+    backgroundColor: '#cbe7ff',
+    paddingTop: 60,
+    paddingHorizontal: 20,
   },
-  button: {
-    backgroundColor: '#007bff', paddingVertical: 14,
-    borderRadius: 8, marginTop: 10
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 40,
   },
-  buttonText: { color: '#fff', textAlign: 'center', fontSize: 16, fontWeight: '600' },
+  icon: {
+    width: 70,
+    height: 70,
+    resizeMode: 'contain',
+    marginRight: 10,
+  },
+  usernameBox: {
+    backgroundColor: '#fff',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 4,
+  },
+  username: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  profileSection: {
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  profilePicPlaceholder: {
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    backgroundColor: '#ddd',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  profileIcon: {
+    fontSize: 60,
+  },
+  name: {
+    fontSize: 20,
+    color: '#3b71ca',
+    marginBottom: 20,
+  },
+  editButton: {
+    backgroundColor: '#fff5c8',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 6,
+    borderColor: '#000',
+    borderWidth: 1,
+  },
+  editButtonText: {
+    fontSize: 16,
+    color: '#000',
+    fontWeight: '500',
+  },
 });
