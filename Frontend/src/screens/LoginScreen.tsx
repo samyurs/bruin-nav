@@ -1,4 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import { Alert } from "react-native";
+import { API_BASE_URL } from '@env';
+import LoginPage from "../components/LoginPage"; // Make sure the path matches where you saved it
+
+export default function LoginScreen({ navigation }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLogin = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/users/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (res.ok) {
+        navigation.navigate("Home");
+      } else {
+        const data = await res.json();
+        Alert.alert("Login Failed", data.msg || "Invalid credentials");
+      }
+    } catch (err) {
+      console.error(err);
+      Alert.alert("Error", "Something went wrong");
+    }
+  };
+
+  return (
+    <LoginPage
+      email={email}
+      setEmail={setEmail}
+      password={password}
+      setPassword={setPassword}
+      onLogin={handleLogin}
+      onRegisterNavigate={() => navigation.navigate("Register")}
+    />
+  );
+}
+/*import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { API_BASE_URL } from '@env';
 
@@ -102,4 +142,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 14,
   },
-});
+});*/
