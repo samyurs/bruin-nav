@@ -9,6 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { API_BASE_URL } from '@env';
 
 export default function BuildingDetailScreen({ route, navigation }) {
   const { landmark } = route.params;
@@ -23,7 +24,7 @@ export default function BuildingDetailScreen({ route, navigation }) {
   const fetchBuildingDetails = async () => {
     try {
       // Replace with your actual backend URL
-      const response = await fetch(`http://localhost:5050/api/landmarks/${landmark._id}/details`);
+      const response = await fetch(`${API_BASE_URL}/landmarks/${landmark._id}/details`);
       const data = await response.json();
       setBuildingDetails(data);
     } catch (error) {

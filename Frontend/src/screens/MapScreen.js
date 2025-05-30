@@ -14,6 +14,7 @@ import {
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { API_BASE_URL } from '@env';
 
 const UCLA_REGION = {
   latitude: 34.0689,
@@ -84,7 +85,7 @@ export default function MapScreen({ navigation }) {
   const fetchLandmarks = async () => {
     try {
       // Replace with your actual backend URL
-      const response = await fetch('http://localhost:5050/api/landmarks');
+      const response = await fetch(`${API_BASE_URL}/landmarks`);
       const data = await response.json();
       setLandmarks(data);
     } catch (error) {

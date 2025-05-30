@@ -11,6 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { API_BASE_URL } from '@env';
 
 const POST_CATEGORIES = [
   { id: 'tip', label: 'Navigation Tip', icon: 'directions' },
@@ -61,7 +62,7 @@ export default function CreatePostScreen({ navigation }) {
       };
 
       // Replace with your actual backend URL
-      const response = await fetch('http://localhost:5050/api/notes', {
+      const response = await fetch(`${API_BASE_URL}/notes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -10,6 +10,7 @@ import {
   Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { API_BASE_URL } from '@env';
 
 export default function PostsScreen({ navigation }) {
   const [posts, setPosts] = useState([]);
@@ -29,7 +30,7 @@ export default function PostsScreen({ navigation }) {
   const fetchPosts = async () => {
     try {
       // Replace with your actual backend URL
-      const response = await fetch('http://localhost:5050/api/notes');
+      const response = await fetch(`${API_BASE_URL}/notes`);
       const data = await response.json();
       setPosts(data);
     } catch (error) {
