@@ -23,7 +23,7 @@ export default function SettingsScreen({ route }) {
     }
 
     try {
-      const res = await fetch(`${API_BASE_URL}/users/update`, {
+      const res = await fetch(`${API_BASE_URL}/users`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
