@@ -20,4 +20,4 @@ const IndoorNodeSchema = new mongoose.Schema({
   connectsTo: [{ type: mongoose.Schema.Types.ObjectId, ref: 'IndoorNode' }]
 });
 
-export default mongoose.model.IndoorNode || mongoose.model("IndoorNode", IndoorNodeSchema);
+export default mongoose.models.IndoorNode || mongoose.model("IndoorNode", IndoorNodeSchema);

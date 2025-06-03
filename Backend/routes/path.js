@@ -20,6 +20,7 @@ import mongoose from "mongoose";
 
 import Landmark from "../models/Landmark.js";
 import IndoorNode from "../models/IndoorNode.js";
+import { generateNaturalLanguageInstructions } from "../lib/ai.js";
 
 const router = express.Router();
 
@@ -179,17 +180,18 @@ router.get("/", async (req, res) => {
   // Compress stair nodes
   pathIds = compressStairs(pathIds, id2name);
   
-  const steps = pathIds.map((id, depth) => ({
-    id,
-    name: id2name[id],
-    depth
-  }));
+  const steps = pathIds.map(id => id2name[id]);
+
+  // 4. Generate natural language instructions using Gemini AI
+  const naturalLanguageInstructions = await generateNaturalLanguageInstructions(
+    steps, srcL.name, dstL.name
+  );
 
   return res.json({
     algorithm: algo,
     from:      srcL.name,
     to:        dstL.name,
-    steps
+    instructions: naturalLanguageInstructions
   });
 });
 

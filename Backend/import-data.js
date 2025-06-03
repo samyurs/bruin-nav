@@ -7,13 +7,17 @@
  *   node import-data.js boelter-3f.json
  */
 
-require("dotenv").config();
-const fs       = require("fs");
-const path     = require("path");
-const mongoose = require("mongoose");
+import 'dotenv/config';
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from 'url';
+import mongoose from "mongoose";
 
-const IndoorNode = require("./models/IndoorNode");
-const Landmark   = require("./models/Landmark");
+import IndoorNode from "./models/IndoorNode.js";
+import Landmark from "./models/Landmark.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /* ---------- helper: return a 24‑hour‑open array (7 days) ---------- */
 function defaultHours7d () {

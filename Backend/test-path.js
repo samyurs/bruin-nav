@@ -42,8 +42,8 @@ async function testPath({ from, to, accessible }) {
     }
 
     console.log(`  Path found using: ${data.algorithm}`);
-    data.steps.forEach((step, index) => {
-      console.log(`  ${index + 1}. ${step.name} (depth: ${step.depth})`);
+    data.instructions.forEach((step, index) => {
+      console.log(`  ${index + 1}. ${step}`);
     });
 
   } catch (err) {
