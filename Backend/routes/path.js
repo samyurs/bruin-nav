@@ -15,12 +15,13 @@
  *     large‑scale optimisations with $graphLookup.
  */
 
-const express  = require("express");
-const router   = express.Router();
-const mongoose = require("mongoose");
+import express from "express";
+import mongoose from "mongoose";
 
-const Landmark = require("../models/Landmark");
-const IndoorNode = require("../models/IndoorNode");
+import Landmark from "../models/Landmark.js";
+import IndoorNode from "../models/IndoorNode.js";
+
+const router = express.Router();
 
 // Allowed categories that a client can pass as `to=printer` etc.
 const knownTypes = [
@@ -279,4 +280,4 @@ async function bfsSearch(startId, endId, needAccessible) {
   return null; // unreachable
 }
 
-module.exports = router;
+export default router;
