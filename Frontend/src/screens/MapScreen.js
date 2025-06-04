@@ -178,7 +178,7 @@ export default function MapScreen({ navigation }) {
       <MapView
         ref={mapRef}
         style={styles.map}
-        provider={PROVIDER_GOOGLE}
+        provider={ Platform.OS === 'android' ? PROVIDER_GOOGLE : null }
         region={region}
         onRegionChangeComplete={setRegion}
         showsUserLocation={true}

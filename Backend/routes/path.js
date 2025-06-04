@@ -109,7 +109,7 @@ router.get("/", async (req, res) => {
   }
 
   // 1.  Source landmark  -----------------------------------------------------
-  const srcL = await Landmark.findOne({ name: from });
+  const srcL = await Landmark.findById(from);
   if (!srcL) return res.status(404).json({ error: "Source landmark not found" });
 
   const [srcNodeId] = srcL.connectedTo || [];
@@ -139,7 +139,7 @@ router.get("/", async (req, res) => {
 
   // 2‑B. `to` is an explicit *landmark name* --------------------------------
   else {
-    dstL = await Landmark.findOne({ name: to });
+    dstL = await Landmark.findById(to);
     if (!(await isLandmarkAvailable(dstL, needAccessible))) {
       return res.status(404).json({ error: "Destination landmark is not available" });
     }
