@@ -31,6 +31,8 @@ export default function OutdoorNavScreen({ navigation, route }) {
   
   const [userLocation, setUserLocation] = useState(null);
   const [destination, setDestination] = useState(null);
+  const [targetLandmark, setTargetLandmark] = useState(null); // The original landmark from the query
+  const [nearestEntrance, setNearestEntrance] = useState(null); // The nearest entrance
   const [region, setRegion] = useState(UCLA_REGION);
   const [routeInfo, setRouteInfo] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -148,31 +150,72 @@ export default function OutdoorNavScreen({ navigation, route }) {
       setLoading(true);
       setError(null);
       
-      const response = await fetch(`${API_BASE_URL}/landmarks/${landmarkId}`);
+      // Fetch the landmark details
+      const landmarkResponse = await fetch(`${API_BASE_URL}/landmarks/${landmarkId}`);
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (!landmarkResponse.ok) {
+        throw new Error(`HTTP error! status: ${landmarkResponse.status}`);
       }
       
-      const data = await response.json();
+      const landmarkData = await landmarkResponse.json();
       
-      if (data.error) {
-        throw new Error(data.error);
+      if (landmarkData.error) {
+        throw new Error(landmarkData.error);
       }
 
-      const { landmark } = data;
+      const { landmark } = landmarkData;
       
-      const destinationLocation = {
-        latitude: landmark.location.coordinates[1],
-        longitude: landmark.location.coordinates[0],
-      };
+      // Store the target landmark
+      setTargetLandmark(landmark);
       
-      setDestination({
-        ...destinationLocation,
-        name: landmark.name,
-        type: landmark.type,
-        id: landmark._id
-      });
+      // Fetch the nearest entrance for this landmark
+      const entranceResponse = await fetch(`${API_BASE_URL}/landmarks/${landmarkId}/nearest-entrance`);
+      
+      if (entranceResponse.ok) {
+        const entranceData = await entranceResponse.json();
+        if (entranceData.nearestEntrance) {
+          setNearestEntrance(entranceData.nearestEntrance);
+          
+          // Set the destination to the nearest entrance
+          const destinationLocation = {
+            latitude: entranceData.nearestEntrance.location.coordinates[1],
+            longitude: entranceData.nearestEntrance.location.coordinates[0],
+          };
+          
+          setDestination({
+            ...destinationLocation,
+            name: entranceData.nearestEntrance.name,
+            type: entranceData.nearestEntrance.type,
+            id: entranceData.nearestEntrance._id
+          });
+        } else {
+          // No entrance found, set destination to the landmark itself
+          const destinationLocation = {
+            latitude: landmark.location.coordinates[1],
+            longitude: landmark.location.coordinates[0],
+          };
+          
+          setDestination({
+            ...destinationLocation,
+            name: landmark.name,
+            type: landmark.type,
+            id: landmark._id
+          });
+        }
+      } else {
+        // Fallback to the landmark itself if entrance fetch fails
+        const destinationLocation = {
+          latitude: landmark.location.coordinates[1],
+          longitude: landmark.location.coordinates[0],
+        };
+        
+        setDestination({
+          ...destinationLocation,
+          name: landmark.name,
+          type: landmark.type,
+          id: landmark._id
+        });
+      }
       
     } catch (error) {
       console.error(`Error fetching landmark details: ${error}`);
@@ -236,29 +279,16 @@ export default function OutdoorNavScreen({ navigation, route }) {
           {
             text: 'Indoor Navigation',
             onPress: () => {
-              // Get a generic indoor destination for demo
-              const indoorDestination = getIndoorDestination(destination.name);
+              // Navigate to indoor navigation using landmark IDs
               navigation.navigate('IndoorNav', {
-                from: `${destination.name} Entrance`,
-                to: indoorDestination
+                from: nearestEntrance ? nearestEntrance.id : destination.id,
+                to: targetLandmark ? targetLandmark._id : destination.id
               });
             },
           },
         ]
       );
     }
-  };
-
-  const getIndoorDestination = (buildingName) => {
-    // Simple mapping for demo purposes
-    const indoorDestinations = {
-      'Royce Hall': 'Room 314',
-      'Powell Library': 'Study Room A',
-      'Ackerman Union': 'Food Court',
-      'Boelter Hall': 'Computer Lab 3400',
-      'Young Research Library': 'Reading Room',
-    };
-    return indoorDestinations[buildingName] || 'Information Desk';
   };
 
   const startNavigation = () => {
@@ -321,6 +351,19 @@ export default function OutdoorNavScreen({ navigation, route }) {
     const hours = Math.floor(durationMin / 60);
     const minutes = Math.round(durationMin % 60);
     return `${hours}h ${minutes}m`;
+  };
+
+  const handleToIndoor = () => {
+    if (nearestEntrance && targetLandmark) {
+      // Navigate to indoor navigation with entrance as 'from' and target landmark as 'to'
+      navigation.navigate('IndoorNav', {
+        from: nearestEntrance._id,
+        to: targetLandmark._id
+      });
+    } else {
+      // No entrance found, go back to previous screen
+      navigation.goBack();
+    }
   };
 
   if (loading) {
@@ -498,6 +541,25 @@ export default function OutdoorNavScreen({ navigation, route }) {
           </View>
         )}
       </View>
+
+      {/* To Indoor Button */}
+      {destination && (
+        <View style={styles.indoorButtonContainer}>
+          <TouchableOpacity
+            style={styles.indoorButton}
+            onPress={handleToIndoor}
+          >
+            <Icon 
+              name={nearestEntrance ? "home" : "check"} 
+              size={20} 
+              color="#fff" 
+            />
+            <Text style={styles.indoorButtonText}>
+              {nearestEntrance ? "To Indoor" : "Finish"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {/* Location Error Warning */}
       {!userLocation && !loading && (
@@ -690,6 +752,26 @@ const styles = StyleSheet.create({
     borderColor: '#2E86AB',
     borderRadius: 8,
     padding: 12,
+  },
+  indoorButtonContainer: {
+    backgroundColor: '#fff',
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#e9ecef',
+  },
+  indoorButton: {
+    backgroundColor: '#2E86AB',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 16,
+    borderRadius: 8,
+  },
+  indoorButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginLeft: 8,
   },
   locationWarning: {
     backgroundColor: '#fff3cd',

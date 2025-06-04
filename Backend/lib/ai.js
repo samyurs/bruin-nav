@@ -16,7 +16,7 @@ const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
  * @param {Array} steps - Array of step names
  * @param {string} fromLandmark - Starting landmark name
  * @param {string} toLandmark - Destination landmark name
- * @returns {Promise<string>} Natural language walking directions
+ * @returns {Promise<Array<string>>} Natural language walking directions
  */
 export async function generateNaturalLanguageInstructions(steps, fromLandmark, toLandmark) {
   try {
@@ -74,6 +74,6 @@ Generated instructions:
     return JSON.parse(result.text);
   } catch (error) {
     console.error("Error generating natural language instructions:", error);
-    return "Unable to generate natural language instructions at this time.";
+    return { error: "Unable to generate natural language instructions at this time." };
   }
 }

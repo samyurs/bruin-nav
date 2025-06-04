@@ -161,7 +161,6 @@ router.get('/', async (req, res) => {
  * ```
  */
 router.get('/:id', async (req, res) => {
-    console.log('foo');
     try {
         const { id } = req.params;
         
@@ -182,6 +181,89 @@ router.get('/:id', async (req, res) => {
         res.json({ landmark });
     } catch (error) {
         console.error('Error fetching landmark:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+/**
+ * `GET /api/landmarks/:id/nearest-entrance`
+ * 
+ * Find the nearest entrance to a landmark within the same building.
+ * 
+ * Parameters:
+ * - id: MongoDB ObjectId of the landmark
+ * 
+ * Response:
+ * 
+ * `200 OK` with the nearest entrance landmark data or null.
+ * 
+ * ```ts
+ * {
+ *   nearestEntrance: {
+ *     _id: string,
+ *     name: string,
+ *     type: 'entrance',
+ *     location: {
+ *       type: 'Point',
+ *       coordinates: [number, number]
+ *     },
+ *     building: string
+ *   } | null
+ * }
+ * ```
+ * 
+ * `400 Bad Request` if the landmark ID is invalid.
+ * `404 Not Found` if the landmark doesn't exist.
+ * `500 Internal Server Error` for server errors.
+ */
+router.get('/:id/nearest-entrance', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        if (!id) {
+            return res.status(400).json({ error: 'Landmark ID is required' });
+        }
+
+        if (!isObjectIdOrHexString(id)) {
+            return res.status(400).json({ error: 'Invalid landmark ID format' });
+        }
+
+        // Find the landmark
+        const landmark = await Landmark.findById(id).lean();
+        
+        if (!landmark) {
+            return res.status(404).json({ error: 'Landmark not found' });
+        }
+
+        // Check if the landmark belongs to a building
+        if (!landmark.building) {
+            return res.json({ nearestEntrance: null });
+        }
+
+        // Check if the landmark has location data
+        if (!landmark.location || !landmark.location.coordinates) {
+            return res.json({ nearestEntrance: null });
+        }
+
+        // Find the nearest entrance in the same building using MongoDB's $near operator
+        const nearestEntrances = await Landmark.find({
+            type: 'entrance',
+            building: landmark.building,
+            location: {
+                $near: {
+                    $geometry: {
+                        type: 'Point',
+                        coordinates: landmark.location.coordinates
+                    }
+                }
+            }
+        }).limit(1).lean();
+
+        const nearestEntrance = nearestEntrances.length > 0 ? nearestEntrances[0] : null;
+
+        res.json({ nearestEntrance });
+    } catch (error) {
+        console.error('Error finding nearest entrance:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });

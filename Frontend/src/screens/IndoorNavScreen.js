@@ -35,7 +35,7 @@ export default function IndoorNavScreen({ navigation, route }) {
       setError(null);
       
       const response = await fetch(
-        `${API_BASE_URL}/api/path?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&mode=bfs`
+        `${API_BASE_URL}/path?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&mode=bfs`
       );
       
       if (!response.ok) {
@@ -56,7 +56,6 @@ export default function IndoorNavScreen({ navigation, route }) {
       
       // Parse instructions into individual steps
       const instructionSteps = data.instructions
-        .split('\n')
         .filter(step => step.trim().length > 0)
         .map((step, index) => ({
           id: index,

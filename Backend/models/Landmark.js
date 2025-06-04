@@ -7,7 +7,8 @@ export const LANDMARK_TYPES = [
     'neutral-restroom',
     'study-spot',
     'classroom',
-    'printer'
+    'printer',
+    'entrance'
 ];
 
 /**
@@ -75,7 +76,7 @@ const LandmarkSchema = new mongoose.Schema({
         type: [HoursSchema],
         validate: { validator: hours => hours.length === 7 },
     },
-    parent: { type: mongoose.Types.ObjectId, ref: 'Landmark' },
+    building: { type: mongoose.Types.ObjectId, ref: 'Landmark' },
     accessible: { type: Boolean, default: true },
     //  Landmark is linked to one or more IndoorNodes
     connectedTo: [{ type: mongoose.Schema.Types.ObjectId, ref: 'IndoorNode' }]
