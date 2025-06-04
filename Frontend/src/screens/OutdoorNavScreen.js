@@ -441,8 +441,14 @@ export default function OutdoorNavScreen({ navigation, route }) {
         {/* Directions */}
         {showDirections && userLocation && destination && GOOGLE_MAPS_API_KEY && (
           <MapViewDirections
-            origin={{ latitude: 37.7749, longitude: -122.4194 }}
-            destination={{ latitude: 34.0522, longitude: -118.2437 }}
+            origin={{
+                latitude: userLocation.latitude,
+                longitude: userLocation.longitude,
+            }}
+            destination={{
+                latitude: destination.latitude,
+                longitude: destination.longitude,
+            }}
             apikey={GOOGLE_MAPS_API_KEY}
             strokeWidth={4}
             strokeColor="#2E86AB"
