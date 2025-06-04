@@ -8,7 +8,7 @@ import 'dotenv/config';
 
 const fetch = (...args) => import("node-fetch").then(({ default: f }) => f(...args));
 
-const BASE_URL = "http://localhost:5050/api/path";
+const BASE_URL = `${API_BASE_URL}/path`;
 const MODE     = "graph";    // or "bfs"
 
 const TEST_CASES = [

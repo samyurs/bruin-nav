@@ -4,21 +4,29 @@ import { API_BASE_URL } from '@env';
 
 export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   const handleRegister = async () => {
+    if (password !== confirmPassword) {
+      Alert.alert("Error", "Passwords do not match");
+      return;
+    }
+
     try {
       const res = await fetch(`${API_BASE_URL}/users/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, displayName }),
       });
+
+      const data = await res.json();
 
       if (res.ok) {
         Alert.alert("Success", "Account created!");
-        navigation.navigate('Login'); // Navigate to Login on success
+        navigation.navigate('Login');
       } else {
-        const data = await res.json();
         Alert.alert("Registration Failed", data.msg || "Something went wrong");
       }
     } catch (err) {
@@ -29,33 +37,52 @@ export default function RegisterScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Create Account</Text>
-
+      <Text style={styles.label}>Display Name</Text>
       <TextInput
         style={styles.input}
-        placeholder="Email"
-        placeholderTextColor="#aaa"
+        placeholder="Your name"
+        placeholderTextColor="#666"
+        value={displayName}
+        onChangeText={setDisplayName}
+      />
+
+      <Text style={styles.label}>Email address</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="you@example.com"
+        placeholderTextColor="#666"
         autoCapitalize="none"
         keyboardType="email-address"
         value={email}
         onChangeText={setEmail}
       />
 
+      <Text style={styles.label}>Password</Text>
       <TextInput
         style={styles.input}
         placeholder="Password"
-        placeholderTextColor="#aaa"
+        placeholderTextColor="#666"
         secureTextEntry
         value={password}
         onChangeText={setPassword}
       />
 
+      <Text style={styles.label}>Confirm Password</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Re-enter Password"
+        placeholderTextColor="#666"
+        secureTextEntry
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
+      />
+
       <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={styles.buttonText}>Register</Text>
+        <Text style={styles.buttonText}>Create Account</Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-        <Text style={styles.registerText}>Already have an account? Log in</Text>
+        <Text style={styles.loginText}>Already have an account? Log in</Text>
       </TouchableOpacity>
     </View>
   );
@@ -64,43 +91,45 @@ export default function RegisterScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-start',      // Move everything toward the top
-    paddingTop: 100,   
-    paddingHorizontal: 32,
-    backgroundColor: '#fff',
+    paddingTop: 60,
+    paddingHorizontal: 40,
+    backgroundColor: '#cbe7ff',
   },
-  title: {
-    fontSize: 28,
+  label: {
+    fontSize: 18,
     fontWeight: '600',
-    textAlign: 'center',
-    marginBottom: 32,
+    marginTop: 20,
+    marginBottom: 6,
+    color: '#000',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    borderColor: '#000',
+    backgroundColor: '#fff',
+    borderRadius: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     fontSize: 16,
-    marginBottom: 16,
-    backgroundColor: '#f9f9f9',
   },
   button: {
-    backgroundColor: '#28a745',
+    backgroundColor: '#fff5c8',
+    borderRadius: 30,
     paddingVertical: 14,
-    borderRadius: 8,
-    marginTop: 10,
-    marginBottom: 20,
+    paddingHorizontal: 24,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#000',
+    marginTop: 30,
   },
   buttonText: {
-    color: '#fff',
-    textAlign: 'center',
+    fontSize: 20,
     fontWeight: '600',
-    fontSize: 16,
+    color: '#000',
   },
-  registerText: {
-    color: '#007bff',
+  loginText: {
     textAlign: 'center',
+    color: '#007bff',
+    marginTop: 16,
     fontSize: 14,
   },
 });

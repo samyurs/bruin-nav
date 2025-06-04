@@ -25,6 +25,13 @@ cd ios
 pod install
 cd ..
 ```
+
+**IN FRONTEND create and add the following line of code to the env file if you're on a macbook**
+```bash
+touch .env
+API_BASE_URL=http://localhost:5050/api
+```
+
 3. **Make sure you already have a simulator set up. For example the one I used was in XCode.**
    
 <img width="840" alt="image" src="https://github.com/user-attachments/assets/afee28fe-6054-42d3-ba85-4b7b05090af7" />
