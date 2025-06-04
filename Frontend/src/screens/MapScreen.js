@@ -87,7 +87,7 @@ export default function MapScreen({ navigation }) {
       // Replace with your actual backend URL
       const response = await fetch(`${API_BASE_URL}/landmarks`);
       const data = await response.json();
-      setLandmarks(data);
+      setLandmarks(data.landmarks || []);
     } catch (error) {
       console.error('Error fetching landmarks:', error);
       // For demo purposes, add some sample landmarks

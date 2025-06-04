@@ -88,19 +88,28 @@ const landmarkQuerySchema = z
  */
 router.get('/', async (req, res) => {
     const {
-        result: parseResult,
+        success: parseSuccess,
         error: parseError,
         data: query
     } = await landmarkQuerySchema.safeParseAsync(req.query);
-    if (!parseResult.success) {
+
+    if (!parseSuccess) {
         res.status(400).json({ errors: parseError.issues.map(x => x.message) });
         return;
     }
 
-    const landmarks = await Landmark.find({
-        $text: { $search: query.search },
-        type: query.type ? query.type : undefined,
-        location: query.longitude ? {
+    const mongoQuery = {};
+
+    if (query.search) {
+        mongoQuery.$text = { $search: query.search };
+    }
+
+    if (query.type) {
+        mongoQuery.type = query.type;
+    }
+    
+    if (query.longitude !== undefined) {
+        mongoQuery.location = {
             $near: {
                 $geometry: {
                     type: 'Point',
@@ -108,9 +117,10 @@ router.get('/', async (req, res) => {
                 },
                 $maxDistance: query.maxDistance || 1000,
             },
-        } : undefined,
-    }).lean();
+        };
+    }
 
+    const landmarks = await Landmark.find(mongoQuery).lean();
     res.json({ landmarks });
 });
 
