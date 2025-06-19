@@ -6,7 +6,7 @@ Through an interactive, user-friendly map, students can easily locate buildings,
 
 BruinNav features **Community Notes**, a student-powered section where users can share tips on navigating tricky hallways, finding shortcuts, reporting elevator outages, and more. Notes can be upvoted or downvoted to prioritize the most helpful information.   
     
-🎥 **Demo Video:** [Watch on YouTube](https://youtube.com/shorts/uTWpTRujHOg?feature=share)
+🎥 **Demo Video:** [Demo-BruinNav](https://youtube.com/shorts/uTWpTRujHOg?feature=share)
 
 ---
 
