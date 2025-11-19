@@ -1,12 +1,11 @@
-require("dotenv").config();
+import 'dotenv/config';
 /**
  * How to test?
  *  step 1: run "node server.js" to start the server
  *  step 2: run "node import-data.js boelter-hall.json" to import data(Only once)
  *  step 3: run "node test-path.js" to test path finding
  */
-require("dotenv").config();
-import { API_BASE_URL } from '@env';
+
 const fetch = (...args) => import("node-fetch").then(({ default: f }) => f(...args));
 
 const BASE_URL = `${API_BASE_URL}/path`;
@@ -35,15 +34,7 @@ async function testPath({ from, to, accessible }) {
 
   try {
     const res = await fetch(url);
-    const text = await res.text();
-
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      console.error("  ❌ Unexpected non-JSON response");
-      return;
-    }
+    const data = await res.json();
 
     if (!res.ok) {
       console.error(`  ❌ ${data.error}`);
@@ -51,8 +42,8 @@ async function testPath({ from, to, accessible }) {
     }
 
     console.log(`  Path found using: ${data.algorithm}`);
-    data.steps.forEach((step, index) => {
-      console.log(`  ${index + 1}. ${step.name} (depth: ${step.depth})`);
+    data.instructions.forEach((step, index) => {
+      console.log(`  ${index + 1}. ${step}`);
     });
 
   } catch (err) {

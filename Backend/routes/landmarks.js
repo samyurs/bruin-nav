@@ -1,6 +1,7 @@
 import express from 'express';
 import Landmark, { LANDMARK_TYPES } from '../models/Landmark.js';
 import z from 'zod';
+import { isObjectIdOrHexString } from 'mongoose';
 
 const router = express.Router();
 
@@ -88,19 +89,28 @@ const landmarkQuerySchema = z
  */
 router.get('/', async (req, res) => {
     const {
-        result: parseResult,
+        success: parseSuccess,
         error: parseError,
         data: query
     } = await landmarkQuerySchema.safeParseAsync(req.query);
-    if (!parseResult.success) {
+
+    if (!parseSuccess) {
         res.status(400).json({ errors: parseError.issues.map(x => x.message) });
         return;
     }
 
-    const landmarks = await Landmark.find({
-        $text: { $search: query.search },
-        type: query.type ? query.type : undefined,
-        location: query.longitude ? {
+    const mongoQuery = {};
+
+    if (query.search) {
+        mongoQuery.$text = { $search: query.search };
+    }
+
+    if (query.type) {
+        mongoQuery.type = query.type;
+    }
+    
+    if (query.longitude !== undefined) {
+        mongoQuery.location = {
             $near: {
                 $geometry: {
                     type: 'Point',
@@ -108,10 +118,154 @@ router.get('/', async (req, res) => {
                 },
                 $maxDistance: query.maxDistance || 1000,
             },
-        } : undefined,
-    }).lean();
+        };
+    }
 
+    const landmarks = await Landmark.find(mongoQuery).lean();
     res.json({ landmarks });
+});
+
+/**
+ * `GET /api/landmarks/:id`
+ * 
+ * Get a specific landmark by its ID.
+ * 
+ * Parameters:
+ * - id: MongoDB ObjectId of the landmark
+ * 
+ * Response:
+ * 
+ * `200 OK` with the landmark data.
+ * 
+ * ```ts
+ * {
+ *   landmark: {
+ *     _id: string,
+ *     name: string,
+ *     type?: string,
+ *     location: {
+ *       type: 'Point',
+ *       coordinates: [number, number]
+ *     },
+ *     parent?: string
+ *   }
+ * }
+ * ```
+ * 
+ * `404 Not Found` if the landmark doesn't exist.
+ * 
+ * ```ts
+ * {
+ *   error: string
+ * }
+ * ```
+ */
+router.get('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        if (!id) {
+            return res.status(400).json({ error: 'Landmark ID is required' });
+        }
+
+        if (!isObjectIdOrHexString(id)) {
+            return res.status(400).json({ error: 'Invalid landmark ID format' });
+        }
+
+        const landmark = await Landmark.findById(id).lean();
+        
+        if (!landmark) {
+            return res.status(404).json({ error: 'Landmark not found' });
+        }
+
+        res.json({ landmark });
+    } catch (error) {
+        console.error('Error fetching landmark:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+/**
+ * `GET /api/landmarks/:id/nearest-entrance`
+ * 
+ * Find the nearest entrance to a landmark within the same building.
+ * 
+ * Parameters:
+ * - id: MongoDB ObjectId of the landmark
+ * 
+ * Response:
+ * 
+ * `200 OK` with the nearest entrance landmark data or null.
+ * 
+ * ```ts
+ * {
+ *   nearestEntrance: {
+ *     _id: string,
+ *     name: string,
+ *     type: 'entrance',
+ *     location: {
+ *       type: 'Point',
+ *       coordinates: [number, number]
+ *     },
+ *     building: string
+ *   } | null
+ * }
+ * ```
+ * 
+ * `400 Bad Request` if the landmark ID is invalid.
+ * `404 Not Found` if the landmark doesn't exist.
+ * `500 Internal Server Error` for server errors.
+ */
+router.get('/:id/nearest-entrance', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        if (!id) {
+            return res.status(400).json({ error: 'Landmark ID is required' });
+        }
+
+        if (!isObjectIdOrHexString(id)) {
+            return res.status(400).json({ error: 'Invalid landmark ID format' });
+        }
+
+        // Find the landmark
+        const landmark = await Landmark.findById(id).lean();
+        
+        if (!landmark) {
+            return res.status(404).json({ error: 'Landmark not found' });
+        }
+
+        // Check if the landmark belongs to a building
+        if (!landmark.building) {
+            return res.json({ nearestEntrance: null });
+        }
+
+        // Check if the landmark has location data
+        if (!landmark.location || !landmark.location.coordinates) {
+            return res.json({ nearestEntrance: null });
+        }
+
+        // Find the nearest entrance in the same building using MongoDB's $near operator
+        const nearestEntrances = await Landmark.find({
+            type: 'entrance',
+            building: landmark.building,
+            location: {
+                $near: {
+                    $geometry: {
+                        type: 'Point',
+                        coordinates: landmark.location.coordinates
+                    }
+                }
+            }
+        }).limit(1).lean();
+
+        const nearestEntrance = nearestEntrances.length > 0 ? nearestEntrances[0] : null;
+
+        res.json({ nearestEntrance });
+    } catch (error) {
+        console.error('Error finding nearest entrance:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 });
 
 export default router;

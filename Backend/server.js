@@ -2,7 +2,7 @@ import 'dotenv/config';
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import { landmarksRouter, usersRouter, notesRouter } from './routes/index.js';
+import { landmarksRouter, usersRouter, notesRouter, pathRouter } from './routes/index.js';
 
 const PORT = process.env.PORT || 5050;
 
@@ -22,6 +22,7 @@ async function main() {
   app.use("/api/users", usersRouter);
   app.use("/api/notes", notesRouter);
   app.use("/api/landmarks", landmarksRouter);
+  app.use("/api/path", pathRouter); // path search API
 
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }

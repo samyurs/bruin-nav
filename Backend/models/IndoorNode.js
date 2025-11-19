@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 /**
  * IndoorNode represents a walkable point within a building,
@@ -20,4 +20,4 @@ const IndoorNodeSchema = new mongoose.Schema({
   connectsTo: [{ type: mongoose.Schema.Types.ObjectId, ref: 'IndoorNode' }]
 });
 
-module.exports = mongoose.model("IndoorNode", IndoorNodeSchema);
+export default mongoose.models.IndoorNode || mongoose.model("IndoorNode", IndoorNodeSchema);

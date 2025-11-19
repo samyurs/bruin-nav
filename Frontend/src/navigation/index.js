@@ -16,6 +16,8 @@ import ProfileScreen from '../screens/ProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import BuildingDetailScreen from '../screens/BuildingDetailScreen';
 import CreatePostScreen from '../screens/CreatePostScreen';
+import IndoorNavScreen from '../screens/IndoorNavScreen';
+import OutdoorNavScreen from '../screens/OutdoorNavScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -88,6 +90,8 @@ export default function Navigation() {
             <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="BuildingDetail" component={BuildingDetailScreen} />
             <Stack.Screen name="CreatePost" component={CreatePostScreen} />
+            <Stack.Screen name="IndoorNav" component={IndoorNavScreen} />
+            <Stack.Screen name="OutdoorNav" component={OutdoorNavScreen} />
           </>
         )}
       </Stack.Navigator>

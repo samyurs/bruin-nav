@@ -87,7 +87,7 @@ export default function MapScreen({ navigation }) {
       // Replace with your actual backend URL
       const response = await fetch(`${API_BASE_URL}/landmarks`);
       const data = await response.json();
-      setLandmarks(data);
+      setLandmarks(data.landmarks || []);
     } catch (error) {
       console.error('Error fetching landmarks:', error);
       // For demo purposes, add some sample landmarks
@@ -143,6 +143,35 @@ export default function MapScreen({ navigation }) {
     mapRef.current?.animateToRegion(newRegion, 1000);
   };
 
+  const navigateToLandmark = (landmark) => {
+    navigation.navigate('OutdoorNav', { landmarkId: landmark._id });
+  };
+
+  const handleMarkerPress = (landmark) => {
+    if (landmark.type === 'building') {
+      Alert.alert(
+        landmark.name,
+        'What would you like to do?',
+        [
+          {
+            text: 'View Details',
+            onPress: () => navigation.navigate('BuildingDetail', { landmark }),
+          },
+          {
+            text: 'Navigate Here',
+            onPress: () => navigateToLandmark(landmark),
+          },
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+        ]
+      );
+    } else {
+      navigateToLandmark(landmark);
+    }
+  };
+
   const getMarkerColor = (type) => {
     switch (type) {
       case 'building':
@@ -161,16 +190,24 @@ export default function MapScreen({ navigation }) {
   };
 
   const renderSearchResult = ({ item }) => (
-    <TouchableOpacity
-      style={styles.searchResultItem}
-      onPress={() => selectLandmark(item)}
-    >
-      <Icon name="place" size={20} color="#2E86AB" />
-      <View style={styles.searchResultText}>
-        <Text style={styles.searchResultName}>{item.name}</Text>
-        <Text style={styles.searchResultType}>{item.type.replace('-', ' ')}</Text>
-      </View>
-    </TouchableOpacity>
+    <View style={styles.searchResultItem}>
+      <TouchableOpacity
+        style={styles.searchResultContent}
+        onPress={() => selectLandmark(item)}
+      >
+        <Icon name="place" size={20} color="#2E86AB" />
+        <View style={styles.searchResultText}>
+          <Text style={styles.searchResultName}>{item.name}</Text>
+          <Text style={styles.searchResultType}>{item.type.replace('-', ' ')}</Text>
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.navigateButton}
+        onPress={() => navigateToLandmark(item)}
+      >
+        <Icon name="directions" size={20} color="#2E86AB" />
+      </TouchableOpacity>
+    </View>
   );
 
   return (
@@ -180,7 +217,6 @@ export default function MapScreen({ navigation }) {
         style={styles.map}
         provider={PROVIDER_GOOGLE}
         region={region}
-        onRegionChangeComplete={setRegion}
         showsUserLocation={true}
         showsMyLocationButton={true}
       >
@@ -194,11 +230,7 @@ export default function MapScreen({ navigation }) {
             title={landmark.name}
             description={landmark.type.replace('-', ' ')}
             pinColor={getMarkerColor(landmark.type)}
-            onPress={() => {
-              if (landmark.type === 'building') {
-                navigation.navigate('BuildingDetail', { landmark });
-              }
-            }}
+            onPress={() => handleMarkerPress(landmark)}
           />
         ))}
       </MapView>
@@ -305,9 +337,20 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
   },
+  searchResultContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
   searchResultText: {
     marginLeft: 10,
     flex: 1,
+  },
+  navigateButton: {
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: '#f8f9fa',
+    marginLeft: 10,
   },
   searchResultName: {
     fontSize: 16,

@@ -15,12 +15,14 @@
  *     large‑scale optimisations with $graphLookup.
  */
 
-const express  = require("express");
-const router   = express.Router();
-const mongoose = require("mongoose");
+import express from "express";
+import mongoose from "mongoose";
 
-const Landmark = require("../models/Landmark");
-const IndoorNode = require("../models/IndoorNode");
+import Landmark from "../models/Landmark.js";
+import IndoorNode from "../models/IndoorNode.js";
+import { generateNaturalLanguageInstructions } from "../lib/ai.js";
+
+const router = express.Router();
 
 // Allowed categories that a client can pass as `to=printer` etc.
 const knownTypes = [
@@ -107,7 +109,7 @@ router.get("/", async (req, res) => {
   }
 
   // 1.  Source landmark  -----------------------------------------------------
-  const srcL = await Landmark.findOne({ name: from });
+  const srcL = await Landmark.findById(from);
   if (!srcL) return res.status(404).json({ error: "Source landmark not found" });
 
   const [srcNodeId] = srcL.connectedTo || [];
@@ -137,7 +139,7 @@ router.get("/", async (req, res) => {
 
   // 2‑B. `to` is an explicit *landmark name* --------------------------------
   else {
-    dstL = await Landmark.findOne({ name: to });
+    dstL = await Landmark.findById(to);
     if (!(await isLandmarkAvailable(dstL, needAccessible))) {
       return res.status(404).json({ error: "Destination landmark is not available" });
     }
@@ -178,17 +180,18 @@ router.get("/", async (req, res) => {
   // Compress stair nodes
   pathIds = compressStairs(pathIds, id2name);
   
-  const steps = pathIds.map((id, depth) => ({
-    id,
-    name: id2name[id],
-    depth
-  }));
+  const steps = pathIds.map(id => id2name[id]);
+
+  // 4. Generate natural language instructions using Gemini AI
+  const naturalLanguageInstructions = await generateNaturalLanguageInstructions(
+    steps, srcL.name, dstL.name
+  );
 
   return res.json({
     algorithm: algo,
     from:      srcL.name,
     to:        dstL.name,
-    steps
+    instructions: naturalLanguageInstructions
   });
 });
 
@@ -279,4 +282,4 @@ async function bfsSearch(startId, endId, needAccessible) {
   return null; // unreachable
 }
 
-module.exports = router;
+export default router;

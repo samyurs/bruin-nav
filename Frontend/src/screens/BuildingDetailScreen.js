@@ -158,6 +158,16 @@ export default function BuildingDetailScreen({ route, navigation }) {
           </View>
         </View>
 
+        <View style={styles.navigationContainer}>
+          <TouchableOpacity
+            style={styles.navigateButton}
+            onPress={() => navigation.navigate('OutdoorNavScreen', { landmark })}
+          >
+            <Icon name="navigation" size={20} color="white" />
+            <Text style={styles.navigateButtonText}>Navigate Here</Text>
+          </TouchableOpacity>
+        </View>
+
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Description</Text>
           <Text style={styles.description}>{buildingDetails.description}</Text>
@@ -307,6 +317,33 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     fontSize: 14,
+  },
+  navigationContainer: {
+    marginHorizontal: 20,
+    marginVertical: 10,
+  },
+  navigateButton: {
+    backgroundColor: '#2E86AB',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  navigateButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginLeft: 8,
   },
   section: {
     backgroundColor: 'white',
